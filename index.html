@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resale Mob</title>
+
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+</head>
+
+<body>
+  <main>
+    <h1>Resale Mob</h1>
+
+    <section>
+      <h2>Available Items</h2>
+
+      <div id="buyer-position-1"></div>
+      <div id="buyer-position-2"></div>
+      <div id="buyer-position-3"></div>
+
+      <p id="buyer-message"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="buyer.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</body>
+</html>

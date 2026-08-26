@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resale Mob — Seller</title>
+</head>
+
+<body>
+  <main>
+    <h1>Resale Mob</h1>
+    <h2>Seller Login</h2>
+
+    <section id="login-section">
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          required
+        >
+
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          required
+        >
+
+        <button type="submit">Log In</button>
+      </form>
+
+      <p id="login-message"></p>
+    </section>
+
+    <section id="seller-section" hidden>
+      <p>Seller logged in.</p>
+      <button id="logout-button" type="button">Log Out</button>
+
+      <hr>
+
+      <h2>Add Item</h2>
+
+      <form id="item-form">
+        <label for="item-image">Product Picture</label>
+        <input
+          type="file"
+          id="item-image"
+          accept="image/jpeg,image/png,image/webp"
+          required
+        >
+
+        <label for="item-name">Item Name</label>
+        <input
+          type="text"
+          id="item-name"
+          required
+        >
+
+        <label for="item-price">Price</label>
+        <input
+          type="number"
+          id="item-price"
+          min="0"
+          step="0.01"
+          required
+        >
+
+        <label for="item-description">Description</label>
+        <textarea
+          id="item-description"
+          required
+        ></textarea>
+
+        <button type="submit">Add Item</button>
+      </form>
+
+      <p id="item-message"></p>
+
+      <hr>
+
+      <h2>Seller Inventory</h2>
+      <div id="inventory-list"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="seller.js"></script>
+</body>
+</html>
