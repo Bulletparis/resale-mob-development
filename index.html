@@ -2,38 +2,266 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Resale Mob</title>
 
-  <meta name="theme-color" content="#ffffff">
+  <meta
+    name="theme-color"
+    content="#ffffff"
+  >
 
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png">
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="icon"
+    href="icon-192.png"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background: #ffffff;
+      color: #111111;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    #buyer-sort-anchor {
+      margin-bottom: 18px;
+    }
+
+    /*
+      CURRENT DEVELOPMENT BENCHMARK
+
+      150px is the provisional minimum
+      buyer-card width.
+
+      This is intentionally easy to change
+      later if mobile/PWA testing shows that
+      another width or card concept is better.
+    */
+    #buyer-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(
+            min(
+              150px,
+              100%
+            ),
+            1fr
+          )
+        );
+
+      gap: 16px;
+
+      width: 100%;
+
+      align-items: start;
+    }
+
+    #buyer-position-1,
+    #buyer-position-2,
+    #buyer-position-3 {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .buyer-card {
+      container-type: inline-size;
+
+      width: 100%;
+      min-width: 0;
+    }
+
+    .buyer-slide-controls {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 10px;
+
+      margin-bottom: 12px;
+    }
+
+    .buyer-slide-button {
+      min-width: 72px;
+      min-height: 36px;
+
+      padding: 6px 10px;
+    }
+
+    .buyer-slide-symbol {
+      display: none;
+    }
+
+    .buyer-slide-counter {
+      min-width: 44px;
+
+      text-align: center;
+
+      font-weight: 600;
+    }
+
+    /*
+      CARD-LEVEL RESPONSIVENESS
+
+      This reacts to the width of the
+      individual card, not the device or
+      browser window.
+
+      At compact widths the slideshow uses
+      arrows instead of full text buttons.
+    */
+    @container (
+      max-width: 190px
+    ) {
+      .buyer-slide-controls {
+        gap: 5px;
+      }
+
+      .buyer-slide-button {
+        min-width: 36px;
+        min-height: 36px;
+
+        padding: 4px 8px;
+
+        font-size: 18px;
+      }
+
+      .buyer-slide-word {
+        display: none;
+      }
+
+      .buyer-slide-symbol {
+        display: inline;
+      }
+
+      .buyer-slide-counter {
+        min-width: 38px;
+
+        font-size: 14px;
+      }
+    }
+
+    #buyer-message {
+      margin-top: 20px;
+    }
+
+    #buyer-message.coming-soon {
+      width: 100%;
+
+      padding: 48px 20px;
+
+      text-align: center;
+
+      font-size: 28px;
+      font-weight: 700;
+
+      border:
+        1px solid #d8d8d8;
+
+      border-radius: 12px;
+
+      background: #ffffff;
+    }
+  </style>
 </head>
 
 <body>
   <main>
-    <h1>Resale Mob</h1>
+    <h1>
+      Resale Mob
+    </h1>
 
     <section>
-      <h2>Available Items</h2>
+      <h2>
+        Available Items
+      </h2>
 
-      <div id="buyer-position-1"></div>
-      <div id="buyer-position-2"></div>
-      <div id="buyer-position-3"></div>
+      <div
+        id="buyer-sort-anchor"
+      ></div>
 
-      <p id="buyer-message"></p>
+      <div
+        id="buyer-grid"
+      >
+        <div
+          id="buyer-position-1"
+        ></div>
+
+        <div
+          id="buyer-position-2"
+        ></div>
+
+        <div
+          id="buyer-position-3"
+        ></div>
+      </div>
+
+      <p
+        id="buyer-message"
+      ></p>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <script src="buyer.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="supabase.js"
+  ></script>
+
+  <script
+    src="buyer.js"
+  ></script>
 
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js");
+    if (
+      "serviceWorker"
+      in navigator
+    ) {
+      navigator.serviceWorker.register(
+        "service-worker.js"
+      );
     }
   </script>
 </body>

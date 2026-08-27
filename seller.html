@@ -39,48 +39,126 @@
 
       <hr>
 
-      <h2>Add Item</h2>
+      <h2>Seller Dashboard</h2>
 
-      <form id="item-form">
-        <label for="item-image">Product Picture</label>
-        <input
-          type="file"
-          id="item-image"
-          accept="image/jpeg,image/png,image/webp"
-          required
-        >
-
-        <label for="item-name">Item Name</label>
-        <input
-          type="text"
-          id="item-name"
-          required
-        >
-
-        <label for="item-price">Price</label>
-        <input
-          type="number"
-          id="item-price"
-          min="0"
-          step="0.01"
-          required
-        >
-
-        <label for="item-description">Description</label>
-        <textarea
-          id="item-description"
-          required
-        ></textarea>
-
-        <button type="submit">Add Item</button>
-      </form>
-
-      <p id="item-message"></p>
+      <nav id="seller-dashboard">
+        <button id="dashboard-add-item" type="button">Add Item</button>
+        <button id="dashboard-edit-items" type="button">Edit / Delete Items</button>
+        <button id="dashboard-claims" type="button">Claims</button>
+        <button id="dashboard-seller-page" type="button">Seller Page Setup</button>
+        <button id="dashboard-categories" type="button">Categories</button>
+      </nav>
 
       <hr>
 
-      <h2>Seller Inventory</h2>
-      <div id="inventory-list"></div>
+      <section id="add-item-section" hidden>
+        <h2>Add Item</h2>
+
+        <form id="item-form">
+          <div>
+            <label for="item-image-1">Product Picture 1</label>
+            <input
+              type="file"
+              id="item-image-1"
+              accept="image/jpeg,image/png,image/webp"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="item-image-2">Product Picture 2</label>
+            <input
+              type="file"
+              id="item-image-2"
+              accept="image/jpeg,image/png,image/webp"
+            >
+          </div>
+
+          <div>
+            <label for="item-image-3">Product Picture 3</label>
+            <input
+              type="file"
+              id="item-image-3"
+              accept="image/jpeg,image/png,image/webp"
+            >
+          </div>
+
+          <div>
+            <label for="item-image-4">Product Picture 4</label>
+            <input
+              type="file"
+              id="item-image-4"
+              accept="image/jpeg,image/png,image/webp"
+            >
+          </div>
+
+          <label for="item-name">Item Name</label>
+          <input
+            type="text"
+            id="item-name"
+            required
+          >
+
+          <label for="item-price">Price</label>
+          <input
+            type="number"
+            id="item-price"
+            min="0"
+            step="0.01"
+            required
+          >
+
+          <label for="item-description">Description</label>
+          <textarea
+            id="item-description"
+            required
+          ></textarea>
+
+          <label for="item-category">Category</label>
+          <select id="item-category">
+            <option value="">No Category</option>
+          </select>
+
+          <button type="submit">Add Item</button>
+        </form>
+
+        <p id="item-message"></p>
+      </section>
+
+      <section id="edit-items-section" hidden>
+        <h2>Edit / Delete Items</h2>
+        <div id="inventory-list"></div>
+      </section>
+
+      <section id="claims-section" hidden>
+        <h2>Claims</h2>
+        <p>Claims work area.</p>
+      </section>
+
+      <section id="seller-page-section" hidden>
+        <h2>Seller Page Setup</h2>
+        <p>Seller Page Setup work area.</p>
+      </section>
+
+      <section id="categories-section" hidden>
+        <h2>Categories</h2>
+
+        <form id="category-form">
+          <label for="category-name">Category Name</label>
+          <input
+            type="text"
+            id="category-name"
+            required
+          >
+
+          <button type="submit">Add Category</button>
+        </form>
+
+        <p id="category-message"></p>
+
+        <h3>Current Categories</h3>
+        <div id="category-list"></div>
+      </section>
     </section>
   </main>
 
