@@ -147,7 +147,13 @@ async function getItemImages(item) {
   const session =
     await getCurrentSession();
 
-  if (!session) {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (
+    !session ||
+    !store
+  ) {
     return [];
   }
 
@@ -163,6 +169,10 @@ async function getItemImages(item) {
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       )
       .eq(
         "item_id",
@@ -634,9 +644,15 @@ async function replaceItemImage(
   const session =
     await getCurrentSession();
 
-  if (!session) {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (
+    !session ||
+    !store
+  ) {
     inventoryMessage.textContent =
-      "You must be logged in.";
+      "You must be logged in with a store assigned.";
 
     return false;
   }
@@ -709,6 +725,10 @@ async function replaceItemImage(
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       );
 
   if (imageRecordError) {
@@ -745,6 +765,10 @@ async function replaceItemImage(
         .eq(
           "seller_id",
           session.user.id
+        )
+        .eq(
+          "store_id",
+          store.id
         );
 
     if (bridgeError) {
@@ -768,6 +792,10 @@ async function replaceItemImage(
           .eq(
             "seller_id",
             session.user.id
+          )
+          .eq(
+            "store_id",
+            store.id
           );
 
       if (!rollbackError) {
@@ -834,9 +862,15 @@ async function removeItemImage(
   const session =
     await getCurrentSession();
 
-  if (!session) {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (
+    !session ||
+    !store
+  ) {
     inventoryMessage.textContent =
-      "You must be logged in.";
+      "You must be logged in with a store assigned.";
 
     return false;
   }
@@ -903,6 +937,10 @@ async function removeItemImage(
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       );
 
   if (deleteRecordError) {
@@ -966,6 +1004,10 @@ async function removeItemImage(
         .eq(
           "seller_id",
           session.user.id
+        )
+        .eq(
+          "store_id",
+          store.id
         );
 
     if (reorderError) {
@@ -1007,9 +1049,15 @@ async function addItemImage(
   const session =
     await getCurrentSession();
 
-  if (!session) {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (
+    !session ||
+    !store
+  ) {
     inventoryMessage.textContent =
-      "You must be logged in.";
+      "You must be logged in with a store assigned.";
 
     return false;
   }
@@ -1075,6 +1123,8 @@ async function addItemImage(
       .insert({
         seller_id:
           session.user.id,
+        store_id:
+          store.id,
         item_id:
           item.id,
         image_path:
@@ -1110,9 +1160,15 @@ async function moveItemImage(
   const session =
     await getCurrentSession();
 
-  if (!session) {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (
+    !session ||
+    !store
+  ) {
     inventoryMessage.textContent =
-      "You must be logged in.";
+      "You must be logged in with a store assigned.";
 
     return false;
   }
@@ -1187,6 +1243,10 @@ async function moveItemImage(
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       );
 
   if (firstMoveError) {
@@ -1216,6 +1276,10 @@ async function moveItemImage(
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       );
 
   if (secondMoveError) {
@@ -1239,6 +1303,10 @@ async function moveItemImage(
         .eq(
           "seller_id",
           session.user.id
+        )
+        .eq(
+          "store_id",
+          store.id
         );
 
     inventoryMessage.textContent =
@@ -1283,6 +1351,10 @@ async function moveItemImage(
       .eq(
         "seller_id",
         session.user.id
+      )
+      .eq(
+        "store_id",
+        store.id
       );
 
   if (bridgeError) {
@@ -1306,6 +1378,10 @@ async function moveItemImage(
         .eq(
           "seller_id",
           session.user.id
+        )
+        .eq(
+          "store_id",
+          store.id
         );
 
     const {
@@ -1328,6 +1404,10 @@ async function moveItemImage(
         .eq(
           "seller_id",
           session.user.id
+        )
+        .eq(
+          "store_id",
+          store.id
         );
 
     inventoryMessage.textContent =

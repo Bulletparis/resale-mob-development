@@ -1,169 +1,3283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resale Mob — Seller</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" >
+<title> Resale Mob — Seller </title>
+<style>
+body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; text-align: center;
+}
+main { width: min(100% - 24px, 820px); margin: 0 auto; padding: 20px 0 40px;
+}
+section, nav, form, div, p, h1, h2, h3, label { margin-left: auto; margin-right: auto;
+}
+#seller-dashboard, #seller-page-setup-menu {
+display: grid;
+grid-auto-flow: column;
+grid-auto-columns: max-content;
+justify-content: center;
+gap: 5px;
+}
+#seller-dashboard button, #seller-page-setup-menu button {
+min-height: 34px;
+padding: 5px 5px;
+font-size: clamp(0.56rem, 2.4vw, 0.72rem);
+line-height: 1;
+white-space: nowrap;
+}
+#add-item-section form, #login-form { display: grid; gap: 10px; max-width: 620px; margin-left: auto; margin-right: auto;
+}
+input, textarea, select, button { font: inherit;
+}
+input, textarea, select { box-sizing: border-box; width: 100%; max-width: 620px; padding: 10px; margin-left: auto; margin-right: auto;
+}
+textarea { min-height: 110px; resize: vertical;
+}
+button { min-height: 40px; padding: 8px 12px; cursor: pointer;
+}
+button:disabled { cursor: not-allowed; opacity: 0.45;
+}
+#inventory-list {
+display: grid;
+grid-template-columns: repeat(auto-fill, 150px);
+gap: 12px;
+align-items: start;
+justify-content: center;
+max-width: 100%;
+}
+.inventory-card {
+box-sizing: border-box;
+width: 150px;
+min-width: 150px;
+border: 1px solid #cfcfcf;
+border-radius: 8px;
+padding: 8px;
+background: #ffffff;
+box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+overflow: hidden;
+}
+.inventory-card img {
+display: block;
+width: 100%;
+height: auto;
+aspect-ratio: 4 / 3;
+object-fit: cover;
+border-radius: 6px;
+margin-bottom: 8px;
+}
+.inventory-card h3 {
+margin: 6px 0;
+font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+line-height: 1.15;
+overflow-wrap: anywhere;
+}
+.inventory-card p {
+margin: 5px 0;
+font-size: clamp(0.68rem, 1.25vw, 0.82rem);
+line-height: 1.2;
+overflow-wrap: anywhere;
+}
+.inventory-card-controls {
+display: grid;
+grid-template-columns: repeat(12, minmax(0, 1fr));
+gap: 4px;
+margin-top: 8px;
+padding-top: 8px;
+border-top: 1px solid #e5e5e5;
+}
+.inventory-card-controls button {
+box-sizing: border-box;
+width: 100%;
+min-width: 0;
+min-height: 29px;
+padding: 3px 1px;
+font-size: clamp(0.58rem, 1vw, 0.7rem);
+line-height: 1;
+white-space: nowrap;
+overflow: hidden;
+}
+.inventory-card-controls button:nth-child(1),
+.inventory-card-controls button:nth-child(2),
+.inventory-card-controls button:nth-child(3) {
+grid-column: span 4;
+}
+.inventory-card-controls button:nth-child(4) {
+grid-column: span 5;
+}
+.inventory-card-controls button:nth-child(5) {
+grid-column: span 3;
+}
+.inventory-card-controls button:nth-child(6) {
+grid-column: span 4;
+}
+.inventory-card-message {
+min-height: 1.2em;
+margin-top: 8px;
+margin-bottom: 0;
+font-size: clamp(0.66rem, 1.2vw, 0.78rem);
+line-height: 1.15;
+font-weight: 700;
+overflow-wrap: anywhere;
+}
+.inventory-card-editing {
+grid-column: 1 / -1;
+width: min(100%, 760px);
+min-width: 0;
+overflow: visible;
+}
+.inventory-card-editing img {
+max-width: 320px;
+}
+#page-appearance-section {
+max-width: 620px;
+}
+#page-appearance-section > div {
+margin-top: 18px;
+margin-bottom: 18px;
+}
+#page-appearance-section label {
+display: block;
+margin-bottom: 8px;
+}
+#page-title {
+max-width: 360px;
+}
+#background-color {
+box-sizing: border-box;
+width: 56px;
+height: 40px;
+padding: 3px;
+display: block;
+margin: 0 auto;
+cursor: pointer;
+}
+#save-page-appearance {
+margin-top: 10px;
+}
+#business-info-section {
+max-width: 620px;
+}
+.business-online-only {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 6px;
+margin-top: 18px;
+margin-bottom: 22px;
+}
+.business-online-only label {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+margin: 0;
+font-size: clamp(12px, calc(6px + 2vw), 18px);
+}
+.business-online-only input[type="checkbox"] {
+box-sizing: border-box;
+width: 1em;
+height: 1em;
+flex: 0 0 1em;
+margin: 0;
+padding: 0;
+}
+.business-info-row {
+display: grid;
+grid-template-columns: 104px minmax(0, 1fr);
+column-gap: 12px;
+align-items: center;
+width: min(100%, 590px);
+margin-top: 0;
+margin-bottom: 14px;
+}
+.business-info-row label {
+margin: 0;
+text-align: right;
+font-size: clamp(12px, calc(6px + 2vw), 18px);
+line-height: 1.15;
+}
+.business-info-row input,
+.business-info-row select {
+box-sizing: border-box;
+justify-self: start;
+margin: 0;
+padding: 8px 10px;
+font-size: clamp(12px, calc(6px + 2vw), 18px);
+min-height: 38px;
+}
+#business-street {
+width: min(100%, 360px);
+}
+#business-city {
+width: min(100%, 240px);
+}
+#business-state {
+width: 90px;
+max-width: 100%;
+}
+#business-zip {
+width: 110px;
+max-width: 100%;
+}
+#business-phone {
+width: 170px;
+max-width: 100%;
+}
+#business-email {
+width: min(100%, 420px);
+}
+#save-business-info {
+margin-top: 8px;
+}
+#business-hours-section {
+max-width: 620px;
+}
+.business-hours-table {
+box-sizing: border-box;
+width: min(100%, 320px);
+margin: 0 auto 18px;
+font-size: 14px;
+}
+.business-hours-header,
+.business-hours-row {
+display: grid;
+grid-template-columns: 88px 16px 108px 108px;
+align-items: center;
+width: 100%;
+}
+.business-hours-header {
+font-weight: 700;
+padding: 0 0 7px;
+border-bottom: 1px solid #bdbdbd;
+}
+.business-hours-header > div:first-child {
+text-align: left;
+}
+.business-hours-header > div:nth-child(2) {
+text-align: center;
+}
+.business-hours-header > div:nth-child(3),
+.business-hours-header > div:nth-child(4) {
+text-align: center;
+}
+.business-hours-row {
+min-height: 44px;
+border-bottom: 1px solid #cfcfcf;
+}
+.business-hours-row.weekend {
+background: #e9e9e9;
+}
+.business-hours-day {
+margin: 0;
+justify-self: stretch;
+padding-left: 4px;
+text-align: left;
+font-weight: 600;
+}
+.business-hours-check {
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.business-hours-check input[type="checkbox"] {
+box-sizing: border-box;
+width: 1em;
+height: 1em;
+margin: 0;
+padding: 0;
+}
+.business-time-cell {
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 1px;
+}
+.business-time-value,
+.business-time-period {
+box-sizing: border-box;
+height: 30px;
+min-height: 30px;
+margin: 0;
+padding: 3px 2px;
+font-size: 12px;
+}
+.business-time-value {
+width: 60px;
+}
+.business-time-period {
+width: 47px;
+}
+.business-time-cell select:disabled {
+opacity: 0.55;
+}
+#save-business-hours {
+margin-top: 4px;
+}
+#categories-section {
+max-width: 620px;
+}
+#category-form {
+display: grid;
+justify-items: center;
+gap: 10px;
+margin-top: 18px;
+margin-bottom: 18px;
+}
+#category-form label {
+margin: 0;
+}
+#category-name {
+box-sizing: border-box;
+width: min(100%, 220px);
+margin: 0;
+}
+#category-form button {
+margin-top: 4px;
+}
+#categories-section h3 {
+margin-top: 24px;
+margin-bottom: 18px;
+}
+#category-list {
+display: grid;
+gap: 10px;
+width: min(100%, 430px);
+}
+.category-row {
+display: grid;
+grid-template-columns: minmax(0, 1fr) 84px 76px;
+column-gap: 8px;
+align-items: center;
+width: 100%;
+}
+.category-row span {
+justify-self: start;
+text-align: left;
+overflow-wrap: anywhere;
+}
+.category-row button {
+box-sizing: border-box;
+width: 100%;
+min-height: 36px;
+margin: 0;
+padding: 6px 8px;
+}
+.category-row input {
+box-sizing: border-box;
+width: 100%;
+max-width: none;
+margin: 0;
+}
+@media (max-width: 360px) {
+main { width: min(100% - 16px, 820px);
+}
+#seller-dashboard, #seller-page-setup-menu {
+gap: 5px;
+}
+#seller-dashboard button, #seller-page-setup-menu button {
+padding-left: 4px;
+padding-right: 4px;
+font-size: 0.56rem;
+}
+}
+</style>
 </head>
-
 <body>
-  <main>
-    <h1>Resale Mob</h1>
-    <h2>Seller Login</h2>
+<main>
+<h1> Resale Mob
+</h1>
+<h2> Seller Login </h2>
+<section id="login-section" >
+<form
+id="login-form" >
+<label for="email"
+> Email </label>
+<input
+type="email" id="email" required >
+<label for="password" > Password
+</label>
+<input type="password" id="password"
+required >
+<button type="submit"
+> Log In </button>
+</form>
+<p id="login-message" ></p>
+</section>
+<section id="seller-section" hidden >
+<p> Seller logged in. </p>
+<p
+id="current-store-message" > Resolving store... </p>
+<button id="logout-button" type="button" >
+Log Out </button>
+<hr>
+<h2>
+Seller Dashboard </h2>
+<nav id="seller-dashboard"
+>
+<button id="dashboard-add-item" type="button"
+> Add Item </button>
+<button
+id="dashboard-edit-items" type="button" > Edit / Delete Items
+</button>
+<button id="dashboard-claims" type="button"
+> Claims </button>
+<button
+id="dashboard-seller-page" type="button" > Seller Page Setup
+</button>
+<button id="dashboard-categories" type="button"
+> Categories </button>
+</nav>
+<hr>
+<section id="add-item-section" hidden
+>
+<h2> Add Item </h2>
+<form id="item-form" >
+<div>
+<label for="item-image-1" > Product Picture 1
+</label>
+<input type="file" id="item-image-1"
+accept="image/jpeg,image/png,image/webp" required >
+</div>
+<div>
+<label for="item-image-2" >
+Product Picture 2 </label>
+<input type="file"
+id="item-image-2" accept="image/jpeg,image/png,image/webp" >
+</div>
+<div>
+<label for="item-image-3" >
+Product Picture 3 </label>
+<input type="file"
+id="item-image-3" accept="image/jpeg,image/png,image/webp" >
+</div>
+<div>
+<label for="item-image-4" >
+Product Picture 4 </label>
+<input type="file"
+id="item-image-4" accept="image/jpeg,image/png,image/webp" >
+</div>
+<label
+for="item-category" > Category </label>
+<select id="item-category" >
+<option value="">
+No Category </option>
+</select>
+<div id="new-category-inline" hidden >
+<label for="new-item-category-name" > New Category Name </label>
+<input type="text" id="new-item-category-name" >
+<div>
+<button id="create-item-category-button" type="button" > Create Category </button>
+<button id="cancel-item-category-button" type="button" > Cancel </button>
+</div>
+<p id="new-item-category-message" ></p>
+</div>
+<label for="item-name" > Item Name
+</label>
+<input type="text" id="item-name"
+required >
+<label for="item-price"
+> Price </label>
+<input
+type="number" id="item-price" min="0" step="0.01"
+required >
+<label for="item-description"
+> Description </label>
+<textarea
+id="item-description" required ></textarea>
+<button
+type="submit" > Add Item </button>
+</form>
+<p id="item-message" ></p>
+</section>
+<section id="edit-items-section" hidden
+>
+<h2> Edit / Delete Items </h2>
+<div id="inventory-list" ></div>
+</section>
+<section id="claims-section" hidden >
+<h2> Claims </h2>
+<p>
+Claims deferred to a later development stage.
+</p>
+</section>
+<section
+id="seller-page-section" hidden >
+<h2>
+Seller Page Setup </h2>
+<nav id="seller-page-setup-menu"
+>
+<button id="setup-page-appearance" type="button"
+> Page Appearance </button>
+<button
+id="setup-business-info" type="button" > Business Info
+</button>
+<button id="setup-business-hours" type="button"
+> Business Hours </button>
+</nav>
+<hr>
+<section id="page-appearance-section" hidden
+>
+<h3> Page Appearance </h3>
+<div>
+<label for="page-title" >
+Buyer Page Title </label>
+<input type="text"
+id="page-title" >
+</div>
+<div>
+<label for="background-color" > Background Color
+</label>
+<input type="color" id="background-color"
+value="#ffffff" >
+</div>
+<button
+id="save-page-appearance" type="button" > Save Page Appearance
+</button>
+<p id="page-appearance-message" ></p>
+</section>
+<section id="business-info-section" hidden
+>
+<h3> Business Info </h3>
+<div class="business-online-only" >
+<label for="online-sales-only" >
+<input type="checkbox" id="online-sales-only" >
+Online Sales Only </label>
+</div>
+<div class="business-info-row" >
+<label for="business-street" > Street Address
+</label>
+<input type="text" id="business-street"
+maxlength="40" autocomplete="street-address" >
+</div>
+<div class="business-info-row" >
+<label
+for="business-city" > City </label>
+<input type="text" id="business-city" maxlength="40" autocomplete="address-level2" >
+</div>
+<div class="business-info-row" >
+<label for="business-state"
+> State </label>
+<select id="business-state" autocomplete="address-level1" >
+<option value="" > Select </option>
+<option value="AL" > AL </option>
+<option value="AK" > AK </option>
+<option value="AZ" > AZ </option>
+<option value="AR" > AR </option>
+<option value="CA" > CA </option>
+<option value="CO" > CO </option>
+<option value="CT" > CT </option>
+<option value="DE" > DE </option>
+<option value="FL" > FL </option>
+<option value="GA" > GA </option>
+<option value="HI" > HI </option>
+<option value="ID" > ID </option>
+<option value="IL" > IL </option>
+<option value="IN" > IN </option>
+<option value="IA" > IA </option>
+<option value="KS" > KS </option>
+<option value="KY" > KY </option>
+<option value="LA" > LA </option>
+<option value="ME" > ME </option>
+<option value="MD" > MD </option>
+<option value="MA" > MA </option>
+<option value="MI" > MI </option>
+<option value="MN" > MN </option>
+<option value="MS" > MS </option>
+<option value="MO" > MO </option>
+<option value="MT" > MT </option>
+<option value="NE" > NE </option>
+<option value="NV" > NV </option>
+<option value="NH" > NH </option>
+<option value="NJ" > NJ </option>
+<option value="NM" > NM </option>
+<option value="NY" > NY </option>
+<option value="NC" > NC </option>
+<option value="ND" > ND </option>
+<option value="OH" > OH </option>
+<option value="OK" > OK </option>
+<option value="OR" > OR </option>
+<option value="PA" > PA </option>
+<option value="RI" > RI </option>
+<option value="SC" > SC </option>
+<option value="SD" > SD </option>
+<option value="TN" > TN </option>
+<option value="TX" > TX </option>
+<option value="UT" > UT </option>
+<option value="VT" > VT </option>
+<option value="VA" > VA </option>
+<option value="WA" > WA </option>
+<option value="WV" > WV </option>
+<option value="WI" > WI </option>
+<option value="WY" > WY </option>
+</select>
+</div>
+<div class="business-info-row" >
+<label for="business-zip" >
+ZIP </label>
+<input type="text"
+id="business-zip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code" >
+</div>
+<div class="business-info-row" >
+<label for="business-phone" > Phone
+</label>
+<input type="tel" id="business-phone"
+inputmode="numeric" maxlength="14" autocomplete="tel" value="(xxx) xxx-xxxx" >
+</div>
+<div class="business-info-row" >
+<label
+for="business-email" > Email </label>
+<input type="email" id="business-email" maxlength="254" autocomplete="email" >
+</div>
+<button id="save-business-info" type="button"
+> Save Business Info </button>
+<p
+id="business-info-message" ></p>
+</section>
+<section
+id="business-hours-section" hidden >
+<h3>
+Business Hours </h3>
+<div class="business-hours-table" >
+<div class="business-hours-header" >
+<div></div>
+<div></div>
+<div>Open</div>
+<div>Closed</div>
+</div>
+<div class="business-hours-row" >
+<div class="business-hours-day" >Monday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="monday-open" aria-label="Monday open" >
+</div>
+<div class="business-time-cell" >
+<select id="monday-open-time" class="business-time-value" disabled ></select>
+<select id="monday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="monday-close-time" class="business-time-value" disabled ></select>
+<select id="monday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row" >
+<div class="business-hours-day" >Tuesday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="tuesday-open" aria-label="Tuesday open" >
+</div>
+<div class="business-time-cell" >
+<select id="tuesday-open-time" class="business-time-value" disabled ></select>
+<select id="tuesday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="tuesday-close-time" class="business-time-value" disabled ></select>
+<select id="tuesday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row" >
+<div class="business-hours-day" >Wednesday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="wednesday-open" aria-label="Wednesday open" >
+</div>
+<div class="business-time-cell" >
+<select id="wednesday-open-time" class="business-time-value" disabled ></select>
+<select id="wednesday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="wednesday-close-time" class="business-time-value" disabled ></select>
+<select id="wednesday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row" >
+<div class="business-hours-day" >Thursday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="thursday-open" aria-label="Thursday open" >
+</div>
+<div class="business-time-cell" >
+<select id="thursday-open-time" class="business-time-value" disabled ></select>
+<select id="thursday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="thursday-close-time" class="business-time-value" disabled ></select>
+<select id="thursday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row" >
+<div class="business-hours-day" >Friday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="friday-open" aria-label="Friday open" >
+</div>
+<div class="business-time-cell" >
+<select id="friday-open-time" class="business-time-value" disabled ></select>
+<select id="friday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="friday-close-time" class="business-time-value" disabled ></select>
+<select id="friday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row weekend" >
+<div class="business-hours-day" >Saturday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="saturday-open" aria-label="Saturday open" >
+</div>
+<div class="business-time-cell" >
+<select id="saturday-open-time" class="business-time-value" disabled ></select>
+<select id="saturday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="saturday-close-time" class="business-time-value" disabled ></select>
+<select id="saturday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+<div class="business-hours-row weekend" >
+<div class="business-hours-day" >Sunday</div>
+<div class="business-hours-check" >
+<input type="checkbox" id="sunday-open" aria-label="Sunday open" >
+</div>
+<div class="business-time-cell" >
+<select id="sunday-open-time" class="business-time-value" disabled ></select>
+<select id="sunday-open-period" class="business-time-period" disabled >
+<option value="AM" selected >AM</option>
+<option value="PM" >PM</option>
+</select>
+</div>
+<div class="business-time-cell" >
+<select id="sunday-close-time" class="business-time-value" disabled ></select>
+<select id="sunday-close-period" class="business-time-period" disabled >
+<option value="AM" >AM</option>
+<option value="PM" selected >PM</option>
+</select>
+</div>
+</div>
+</div>
+<button id="save-business-hours" type="button"
+> Save Business Hours </button>
+<p
+id="business-hours-message" ></p>
+</section>
+</section>
+<section id="categories-section" hidden >
+<h2> Categories </h2>
+<form
+id="category-form" >
+<label for="category-name"
+> Category Name </label>
+<input
+type="text" id="category-name" required >
+<button type="submit" > Add Category
+</button>
+</form>
+<p id="category-message"
+></p>
+<h3> Current Categories </h3>
+<div id="category-list" ></div>
+</section>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+<script src="supabase.js" ></script>
+<script src="seller.js" ></script>
+<script>
+const currentStoreMessage = document.getElementById( "current-store-message" );
+let currentResolvedStore = null;
 
-    <section id="login-section">
-      <form id="login-form">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          required
-        >
+async function loadCurrentStoreIdentity() {
+const { data: { session } } =
+await window.supabaseClient.auth.getSession();
 
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          required
-        >
+if (!session) {
+currentResolvedStore = null;
+currentStoreMessage.textContent = "";
+return null;
+}
 
-        <button type="submit">Log In</button>
-      </form>
+if (currentResolvedStore) {
+return currentResolvedStore;
+}
 
-      <p id="login-message"></p>
-    </section>
+currentStoreMessage.textContent = "Resolving store...";
 
-    <section id="seller-section" hidden>
-      <p>Seller logged in.</p>
-      <button id="logout-button" type="button">Log Out</button>
+const {
+data: membership,
+error: membershipError
+} =
+await window.supabaseClient
+.from("store_users")
+.select("store_id, role")
+.eq("user_id", session.user.id)
+.maybeSingle();
 
-      <hr>
+if (membershipError) {
+currentResolvedStore = null;
+currentStoreMessage.textContent =
+"Store membership error: " + membershipError.message;
+return null;
+}
 
-      <h2>Seller Dashboard</h2>
+if (!membership) {
+currentResolvedStore = null;
+currentStoreMessage.textContent =
+"No store membership is assigned to this seller account.";
+return null;
+}
 
-      <nav id="seller-dashboard">
-        <button id="dashboard-add-item" type="button">Add Item</button>
-        <button id="dashboard-edit-items" type="button">Edit / Delete Items</button>
-        <button id="dashboard-claims" type="button">Claims</button>
-        <button id="dashboard-seller-page" type="button">Seller Page Setup</button>
-        <button id="dashboard-categories" type="button">Categories</button>
-      </nav>
+const {
+data: store,
+error: storeError
+} =
+await window.supabaseClient
+.from("stores")
+.select("id, name, slug, status")
+.eq("id", membership.store_id)
+.maybeSingle();
 
-      <hr>
+if (storeError) {
+currentResolvedStore = null;
+currentStoreMessage.textContent =
+"Store lookup error: " + storeError.message;
+return null;
+}
 
-      <section id="add-item-section" hidden>
-        <h2>Add Item</h2>
+if (!store) {
+currentResolvedStore = null;
+currentStoreMessage.textContent =
+"The assigned store could not be found.";
+return null;
+}
 
-        <form id="item-form">
-          <div>
-            <label for="item-image-1">Product Picture 1</label>
-            <input
-              type="file"
-              id="item-image-1"
-              accept="image/jpeg,image/png,image/webp"
-              required
-            >
-          </div>
+currentResolvedStore = {
+id: store.id,
+name: store.name,
+slug: store.slug,
+status: store.status,
+role: membership.role
+};
 
-          <div>
-            <label for="item-image-2">Product Picture 2</label>
-            <input
-              type="file"
-              id="item-image-2"
-              accept="image/jpeg,image/png,image/webp"
-            >
-          </div>
+currentStoreMessage.textContent =
+`Current Store: ${store.name} (${store.slug})`;
 
-          <div>
-            <label for="item-image-3">Product Picture 3</label>
-            <input
-              type="file"
-              id="item-image-3"
-              accept="image/jpeg,image/png,image/webp"
-            >
-          </div>
+return currentResolvedStore;
+}
 
-          <div>
-            <label for="item-image-4">Product Picture 4</label>
-            <input
-              type="file"
-              id="item-image-4"
-              accept="image/jpeg,image/png,image/webp"
-            >
-          </div>
+const setupPageAppearance =
+document.getElementById("setup-page-appearance");
+const setupBusinessInfo =
+document.getElementById("setup-business-info");
+const setupBusinessHours =
+document.getElementById("setup-business-hours");
+const pageAppearanceSection =
+document.getElementById("page-appearance-section");
+const businessInfoSection =
+document.getElementById("business-info-section");
+const businessHoursSection =
+document.getElementById("business-hours-section");
+const pageTitleInput =
+document.getElementById("page-title");
+const backgroundColorInput =
+document.getElementById("background-color");
+const onlineSalesOnlyInput =
+document.getElementById("online-sales-only");
+const businessStreetInput =
+document.getElementById("business-street");
+const businessCityInput =
+document.getElementById("business-city");
+const businessStateInput =
+document.getElementById("business-state");
+const businessZipInput =
+document.getElementById("business-zip");
+const businessPhoneInput =
+document.getElementById("business-phone");
+const businessEmailInput =
+document.getElementById("business-email");
+const savePageAppearanceButton =
+document.getElementById("save-page-appearance");
+const saveBusinessInfoButton =
+document.getElementById("save-business-info");
+const saveBusinessHoursButton =
+document.getElementById("save-business-hours");
+const pageAppearanceMessage =
+document.getElementById("page-appearance-message");
+const businessInfoMessage =
+document.getElementById("business-info-message");
+const businessHoursMessage =
+document.getElementById("business-hours-message");
 
-          <label for="item-name">Item Name</label>
-          <input
-            type="text"
-            id="item-name"
-            required
-          >
+const businessDays = [
+{
+name: "Monday",
+databaseDay: 1,
+openCheckbox: document.getElementById("monday-open"),
+openTime: document.getElementById("monday-open-time"),
+openPeriod: document.getElementById("monday-open-period"),
+closeTime: document.getElementById("monday-close-time"),
+closePeriod: document.getElementById("monday-close-period")
+},
+{
+name: "Tuesday",
+databaseDay: 2,
+openCheckbox: document.getElementById("tuesday-open"),
+openTime: document.getElementById("tuesday-open-time"),
+openPeriod: document.getElementById("tuesday-open-period"),
+closeTime: document.getElementById("tuesday-close-time"),
+closePeriod: document.getElementById("tuesday-close-period")
+},
+{
+name: "Wednesday",
+databaseDay: 3,
+openCheckbox: document.getElementById("wednesday-open"),
+openTime: document.getElementById("wednesday-open-time"),
+openPeriod: document.getElementById("wednesday-open-period"),
+closeTime: document.getElementById("wednesday-close-time"),
+closePeriod: document.getElementById("wednesday-close-period")
+},
+{
+name: "Thursday",
+databaseDay: 4,
+openCheckbox: document.getElementById("thursday-open"),
+openTime: document.getElementById("thursday-open-time"),
+openPeriod: document.getElementById("thursday-open-period"),
+closeTime: document.getElementById("thursday-close-time"),
+closePeriod: document.getElementById("thursday-close-period")
+},
+{
+name: "Friday",
+databaseDay: 5,
+openCheckbox: document.getElementById("friday-open"),
+openTime: document.getElementById("friday-open-time"),
+openPeriod: document.getElementById("friday-open-period"),
+closeTime: document.getElementById("friday-close-time"),
+closePeriod: document.getElementById("friday-close-period")
+},
+{
+name: "Saturday",
+databaseDay: 6,
+openCheckbox: document.getElementById("saturday-open"),
+openTime: document.getElementById("saturday-open-time"),
+openPeriod: document.getElementById("saturday-open-period"),
+closeTime: document.getElementById("saturday-close-time"),
+closePeriod: document.getElementById("saturday-close-period")
+},
+{
+name: "Sunday",
+databaseDay: 0,
+openCheckbox: document.getElementById("sunday-open"),
+openTime: document.getElementById("sunday-open-time"),
+openPeriod: document.getElementById("sunday-open-period"),
+closeTime: document.getElementById("sunday-close-time"),
+closePeriod: document.getElementById("sunday-close-period")
+}
+];
 
-          <label for="item-price">Price</label>
-          <input
-            type="number"
-            id="item-price"
-            min="0"
-            step="0.01"
-            required
-          >
+function hideSellerPageSetupAreas() {
+pageAppearanceSection.hidden = true;
+businessInfoSection.hidden = true;
+businessHoursSection.hidden = true;
+}
 
-          <label for="item-description">Description</label>
-          <textarea
-            id="item-description"
-            required
-          ></textarea>
+function updateAddressFieldState() {
+const addressDisabled = onlineSalesOnlyInput.checked;
+businessStreetInput.disabled = addressDisabled;
+businessCityInput.disabled = addressDisabled;
+businessStateInput.disabled = addressDisabled;
+businessZipInput.disabled = addressDisabled;
+}
 
-          <label for="item-category">Category</label>
-          <select id="item-category">
-            <option value="">No Category</option>
-          </select>
+function digitsOnly(value) {
+return String(value || "").replace(/\D/g, "");
+}
 
-          <button type="submit">Add Item</button>
-        </form>
+let businessPhoneDigits = "";
 
-        <p id="item-message"></p>
-      </section>
+function formatBusinessPhoneMask(value) {
+const digits = digitsOnly(value).slice(0, 10);
+const mask = "xxxxxxxxxx".split("");
 
-      <section id="edit-items-section" hidden>
-        <h2>Edit / Delete Items</h2>
-        <div id="inventory-list"></div>
-      </section>
+digits.split("").forEach((digit, index) => {
+mask[index] = digit;
+});
 
-      <section id="claims-section" hidden>
-        <h2>Claims</h2>
-        <p>Claims work area.</p>
-      </section>
+return `(${mask.slice(0, 3).join("")}) ${mask.slice(3, 6).join("")}-${mask.slice(6, 10).join("")}`;
+}
 
-      <section id="seller-page-section" hidden>
-        <h2>Seller Page Setup</h2>
-        <p>Seller Page Setup work area.</p>
-      </section>
+function renderBusinessPhoneMask() {
+businessPhoneInput.value =
+formatBusinessPhoneMask(businessPhoneDigits);
 
-      <section id="categories-section" hidden>
-        <h2>Categories</h2>
+window.requestAnimationFrame(() => {
+const end = businessPhoneInput.value.length;
+businessPhoneInput.setSelectionRange(end, end);
+});
+}
 
-        <form id="category-form">
-          <label for="category-name">Category Name</label>
-          <input
-            type="text"
-            id="category-name"
-            required
-          >
+function populateBusinessTimeOptions() {
+const values = [];
 
-          <button type="submit">Add Category</button>
-        </form>
+for (let hour = 1; hour <= 12; hour += 1) {
+for (let minute = 0; minute < 60; minute += 15) {
+values.push(
+`${hour}:${String(minute).padStart(2, "0")}`
+);
+}
+}
 
-        <p id="category-message"></p>
+businessDays.forEach((day) => {
+[day.openTime, day.closeTime].forEach((select) => {
+select.innerHTML = "";
 
-        <h3>Current Categories</h3>
-        <div id="category-list"></div>
-      </section>
-    </section>
-  </main>
+values.forEach((value) => {
+const option =
+document.createElement("option");
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <script src="seller.js"></script>
+option.value = value;
+option.textContent = value;
+select.appendChild(option);
+});
+});
+});
+}
+
+function convertStoredTimeToBusinessControls(value, defaultPeriod) {
+if (!value) {
+return {
+time: "8:00",
+period: defaultPeriod
+};
+}
+
+const parts = String(value).split(":");
+const hour24 = Number(parts[0]);
+const minute = parts[1] || "00";
+
+const period =
+hour24 >= 12
+? "PM"
+: "AM";
+
+let hour12 =
+hour24 % 12;
+
+if (hour12 === 0) {
+hour12 = 12;
+}
+
+return {
+time: `${hour12}:${minute}`,
+period
+};
+}
+
+function convertBusinessControlsToStoredTime(timeValue, periodValue) {
+if (!timeValue) {
+return null;
+}
+
+const [hourText, minuteText] =
+timeValue.split(":");
+
+let hour =
+Number(hourText);
+
+if (periodValue === "AM") {
+if (hour === 12) {
+hour = 0;
+}
+} else if (hour !== 12) {
+hour += 12;
+}
+
+return (
+String(hour).padStart(2, "0") +
+":" +
+String(minuteText || "00").padStart(2, "0") +
+":00"
+);
+}
+
+function setBusinessDayDefaults(day) {
+day.openTime.value = "8:00";
+day.openPeriod.value = "AM";
+day.closeTime.value = "5:00";
+day.closePeriod.value = "PM";
+}
+
+function updateBusinessDayState(day) {
+const disabled =
+!day.openCheckbox.checked;
+
+day.openTime.disabled =
+disabled;
+
+day.openPeriod.disabled =
+disabled;
+
+day.closeTime.disabled =
+disabled;
+
+day.closePeriod.disabled =
+disabled;
+}
+
+function updateAllBusinessDayStates() {
+businessDays.forEach((day) => {
+updateBusinessDayState(day);
+});
+}
+
+async function getSetupSession() {
+const { data: { session } } =
+await window.supabaseClient.auth.getSession();
+return session;
+}
+
+async function loadSellerPageSettings() {
+const store = await loadCurrentStoreIdentity();
+
+if (!store) {
+pageAppearanceMessage.textContent =
+"No store membership is assigned.";
+return;
+}
+
+pageAppearanceMessage.textContent =
+"Loading page settings...";
+businessInfoMessage.textContent = "";
+
+const { data, error } =
+await window.supabaseClient
+.from("seller_page_settings")
+.select(
+"page_title, background_color, online_sales_only, business_street, business_city, business_state, business_zip, business_phone, business_email"
+)
+.eq("store_id", store.id)
+.maybeSingle();
+
+if (error) {
+pageAppearanceMessage.textContent = error.message;
+return;
+}
+
+pageTitleInput.value =
+data?.page_title || "";
+backgroundColorInput.value =
+data?.background_color || "#ffffff";
+onlineSalesOnlyInput.checked =
+data?.online_sales_only === true;
+businessStreetInput.value =
+data?.business_street || "";
+businessCityInput.value =
+data?.business_city || "";
+businessStateInput.value =
+data?.business_state || "";
+businessZipInput.value =
+data?.business_zip || "";
+businessPhoneDigits =
+digitsOnly(data?.business_phone || "").slice(0, 10);
+renderBusinessPhoneMask();
+businessEmailInput.value =
+data?.business_email || "";
+
+updateAddressFieldState();
+pageAppearanceMessage.textContent = "";
+}
+
+async function loadBusinessHours() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+businessHoursMessage.textContent =
+"No store membership is assigned.";
+return;
+}
+
+businessHoursMessage.textContent =
+"Loading business hours...";
+
+const { data, error } =
+await window.supabaseClient
+.from("seller_hours")
+.select("day_of_week, is_open, open_time, close_time")
+.eq("store_id", store.id);
+
+if (error) {
+businessHoursMessage.textContent = error.message;
+return;
+}
+
+businessDays.forEach((day) => {
+const savedDay =
+(data || []).find(
+(row) =>
+Number(row.day_of_week) === day.databaseDay
+);
+
+if (!savedDay) {
+day.openCheckbox.checked = false;
+setBusinessDayDefaults(day);
+updateBusinessDayState(day);
+return;
+}
+
+day.openCheckbox.checked =
+savedDay.is_open === true;
+
+const openControls =
+convertStoredTimeToBusinessControls(
+savedDay.open_time,
+"AM"
+);
+
+const closeControls =
+convertStoredTimeToBusinessControls(
+savedDay.close_time,
+"PM"
+);
+
+day.openTime.value =
+openControls.time;
+
+day.openPeriod.value =
+openControls.period;
+
+day.closeTime.value =
+closeControls.time;
+
+day.closePeriod.value =
+closeControls.period;
+
+updateBusinessDayState(day);
+});
+
+businessHoursMessage.textContent = "";
+}
+
+async function savePageAppearance() {
+const session = await getSetupSession();
+const store = await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+pageAppearanceMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+pageAppearanceMessage.textContent =
+"Saving page appearance...";
+
+const { error } =
+await window.supabaseClient
+.from("seller_page_settings")
+.upsert(
+{
+seller_id: session.user.id,
+store_id: store.id,
+page_title:
+pageTitleInput.value.trim() || null,
+background_color:
+backgroundColorInput.value || "#ffffff",
+updated_at:
+new Date().toISOString()
+},
+{
+onConflict: "store_id"
+}
+);
+
+if (error) {
+pageAppearanceMessage.textContent = error.message;
+return;
+}
+
+pageAppearanceMessage.textContent =
+"Page appearance saved successfully.";
+}
+
+async function saveBusinessInfo() {
+const session = await getSetupSession();
+const store = await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+businessInfoMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+if (
+businessEmailInput.value &&
+!businessEmailInput.checkValidity()
+) {
+businessInfoMessage.textContent =
+"Please enter a valid email address.";
+return;
+}
+
+const zipDigits =
+digitsOnly(businessZipInput.value);
+
+if (
+!onlineSalesOnlyInput.checked &&
+zipDigits.length > 0 &&
+zipDigits.length !== 5
+) {
+businessInfoMessage.textContent =
+"ZIP must contain exactly 5 digits.";
+return;
+}
+
+const phoneDigits =
+businessPhoneDigits;
+
+if (
+phoneDigits.length > 0 &&
+phoneDigits.length !== 10
+) {
+businessInfoMessage.textContent =
+"Phone must contain exactly 10 digits.";
+return;
+}
+
+businessInfoMessage.textContent =
+"Saving business info...";
+
+const { error } =
+await window.supabaseClient
+.from("seller_page_settings")
+.upsert(
+{
+seller_id: session.user.id,
+store_id: store.id,
+online_sales_only:
+onlineSalesOnlyInput.checked,
+business_street:
+businessStreetInput.value.trim() || null,
+business_city:
+businessCityInput.value.trim() || null,
+business_state:
+businessStateInput.value.trim() || null,
+business_zip:
+zipDigits || null,
+business_phone:
+phoneDigits || null,
+business_email:
+businessEmailInput.value.trim() || null,
+updated_at:
+new Date().toISOString()
+},
+{
+onConflict: "store_id"
+}
+);
+
+if (error) {
+businessInfoMessage.textContent = error.message;
+return;
+}
+
+businessInfoMessage.textContent =
+"Business info saved successfully.";
+}
+
+async function saveBusinessHours() {
+const session = await getSetupSession();
+const store = await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+businessHoursMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+for (const day of businessDays) {
+if (
+day.openCheckbox.checked &&
+(
+!day.openTime.value ||
+!day.openPeriod.value ||
+!day.closeTime.value ||
+!day.closePeriod.value
+)
+) {
+businessHoursMessage.textContent =
+`${day.name} needs both an opening and closing time.`;
+return;
+}
+}
+
+businessHoursMessage.textContent =
+"Saving business hours...";
+
+const rows =
+businessDays.map((day) => ({
+seller_id: session.user.id,
+store_id: store.id,
+day_of_week: day.databaseDay,
+is_open: day.openCheckbox.checked,
+open_time:
+day.openCheckbox.checked
+? convertBusinessControlsToStoredTime(
+day.openTime.value,
+day.openPeriod.value
+)
+: null,
+close_time:
+day.openCheckbox.checked
+? convertBusinessControlsToStoredTime(
+day.closeTime.value,
+day.closePeriod.value
+)
+: null
+}));
+
+const { error } =
+await window.supabaseClient
+.from("seller_hours")
+.upsert(
+rows,
+{
+onConflict: "store_id,day_of_week"
+}
+);
+
+if (error) {
+businessHoursMessage.textContent = error.message;
+return;
+}
+
+businessHoursMessage.textContent =
+"Business hours saved successfully.";
+}
+
+setupPageAppearance.addEventListener(
+"click",
+() => {
+hideSellerPageSetupAreas();
+pageAppearanceSection.hidden = false;
+}
+);
+
+setupBusinessInfo.addEventListener(
+"click",
+() => {
+hideSellerPageSetupAreas();
+businessInfoSection.hidden = false;
+}
+);
+
+setupBusinessHours.addEventListener(
+"click",
+() => {
+hideSellerPageSetupAreas();
+businessHoursSection.hidden = false;
+}
+);
+
+onlineSalesOnlyInput.addEventListener(
+"change",
+() => {
+updateAddressFieldState();
+}
+);
+
+businessZipInput.addEventListener(
+"input",
+() => {
+businessZipInput.value =
+digitsOnly(businessZipInput.value).slice(0, 5);
+}
+);
+
+businessPhoneInput.addEventListener(
+"beforeinput",
+(event) => {
+if (
+event.inputType === "deleteContentBackward" ||
+event.inputType === "deleteContentForward"
+) {
+event.preventDefault();
+businessPhoneDigits =
+businessPhoneDigits.slice(0, -1);
+renderBusinessPhoneMask();
+return;
+}
+
+if (event.inputType.startsWith("insert")) {
+const newDigits =
+digitsOnly(event.data || "");
+
+if (newDigits) {
+event.preventDefault();
+businessPhoneDigits =
+(businessPhoneDigits + newDigits).slice(0, 10);
+renderBusinessPhoneMask();
+}
+}
+}
+);
+
+businessPhoneInput.addEventListener(
+"paste",
+(event) => {
+event.preventDefault();
+
+const pastedDigits =
+digitsOnly(
+event.clipboardData?.getData("text") || ""
+);
+
+businessPhoneDigits =
+(businessPhoneDigits + pastedDigits).slice(0, 10);
+renderBusinessPhoneMask();
+}
+);
+
+businessPhoneInput.addEventListener(
+"focus",
+() => {
+renderBusinessPhoneMask();
+}
+);
+
+businessPhoneInput.addEventListener(
+"click",
+() => {
+renderBusinessPhoneMask();
+}
+);
+
+businessDays.forEach((day) => {
+day.openCheckbox.addEventListener(
+"change",
+() => {
+if (day.openCheckbox.checked) {
+if (!day.openTime.value) {
+day.openTime.value = "8:00";
+}
+
+if (!day.openPeriod.value) {
+day.openPeriod.value = "AM";
+}
+
+if (!day.closeTime.value) {
+day.closeTime.value = "5:00";
+}
+
+if (!day.closePeriod.value) {
+day.closePeriod.value = "PM";
+}
+}
+
+updateBusinessDayState(day);
+}
+);
+});
+
+savePageAppearanceButton.addEventListener(
+"click",
+async () => {
+await savePageAppearance();
+}
+);
+
+saveBusinessInfoButton.addEventListener(
+"click",
+async () => {
+await saveBusinessInfo();
+}
+);
+
+saveBusinessHoursButton.addEventListener(
+"click",
+async () => {
+await saveBusinessHours();
+}
+);
+
+document
+.getElementById("dashboard-seller-page")
+.addEventListener(
+"click",
+async () => {
+await Promise.all([
+loadSellerPageSettings(),
+loadBusinessHours()
+]);
+}
+);
+
+window.getSellerCategories =
+async function() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+return [];
+}
+
+const { data, error } =
+await window.supabaseClient
+.from("categories")
+.select("id, name")
+.eq("store_id", store.id)
+.order(
+"name",
+{ ascending: true }
+);
+
+if (error) {
+return [];
+}
+
+return data || [];
+};
+
+const newCategoryInline =
+document.getElementById("new-category-inline");
+
+const newItemCategoryName =
+document.getElementById("new-item-category-name");
+
+const createItemCategoryButton =
+document.getElementById("create-item-category-button");
+
+const cancelItemCategoryButton =
+document.getElementById("cancel-item-category-button");
+
+const newItemCategoryMessage =
+document.getElementById("new-item-category-message");
+
+window.loadItemCategoryOptions =
+async function(selectedCategoryId = "") {
+const categories =
+await window.getSellerCategories();
+
+itemCategory.innerHTML = "";
+
+const createOption =
+document.createElement("option");
+
+createOption.value =
+"__create_new__";
+
+createOption.textContent =
+"Create New";
+
+itemCategory.appendChild(
+createOption
+);
+
+const dividerOption =
+document.createElement("option");
+
+dividerOption.disabled =
+true;
+
+dividerOption.textContent =
+"────────────";
+
+itemCategory.appendChild(
+dividerOption
+);
+
+const noCategoryOption =
+document.createElement("option");
+
+noCategoryOption.value =
+"";
+
+noCategoryOption.textContent =
+"No Category";
+
+itemCategory.appendChild(
+noCategoryOption
+);
+
+categories.forEach((category) => {
+const option =
+document.createElement("option");
+
+option.value =
+category.id;
+
+option.textContent =
+category.name;
+
+itemCategory.appendChild(
+option
+);
+});
+
+itemCategory.value =
+selectedCategoryId
+? String(selectedCategoryId)
+: "";
+};
+
+itemCategory.addEventListener(
+"change",
+() => {
+if (
+itemCategory.value !==
+"__create_new__"
+) {
+return;
+}
+
+itemCategory.value = "";
+newCategoryInline.hidden = false;
+newItemCategoryMessage.textContent = "";
+newItemCategoryName.value = "";
+newItemCategoryName.focus();
+}
+);
+
+cancelItemCategoryButton.addEventListener(
+"click",
+() => {
+newCategoryInline.hidden = true;
+newItemCategoryName.value = "";
+newItemCategoryMessage.textContent = "";
+itemCategory.value = "";
+}
+);
+
+createItemCategoryButton.addEventListener(
+"click",
+async () => {
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+newItemCategoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+const categoryName =
+newItemCategoryName.value.trim();
+
+if (!categoryName) {
+newItemCategoryMessage.textContent =
+"Please enter a category name.";
+return;
+}
+
+newItemCategoryMessage.textContent =
+"Creating category...";
+
+const {
+data: createdCategory,
+error
+} =
+await window.supabaseClient
+.from("categories")
+.insert({
+seller_id: session.user.id,
+store_id: store.id,
+name: categoryName
+})
+.select("id, name")
+.single();
+
+if (error) {
+newItemCategoryMessage.textContent =
+error.message;
+return;
+}
+
+await window.loadItemCategoryOptions(
+createdCategory.id
+);
+
+newCategoryInline.hidden = true;
+newItemCategoryName.value = "";
+newItemCategoryMessage.textContent = "";
+}
+);
+
+window.loadCategories =
+async function() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+categoryList.innerHTML = "";
+categoryMessage.textContent =
+"No store membership is assigned to this seller account.";
+return;
+}
+
+categoryMessage.textContent =
+"Loading categories...";
+
+const { data: categories, error } =
+await window.supabaseClient
+.from("categories")
+.select("id, name, created_at")
+.eq("store_id", store.id)
+.order(
+"name",
+{ ascending: true }
+);
+
+if (error) {
+categoryMessage.textContent =
+error.message;
+categoryList.innerHTML = "";
+return;
+}
+
+categoryMessage.textContent = "";
+categoryList.innerHTML = "";
+
+if (
+!categories ||
+categories.length === 0
+) {
+categoryList.textContent =
+"No categories created yet.";
+return;
+}
+
+categories.forEach((category) => {
+const categoryRow =
+document.createElement("div");
+
+categoryRow.className =
+"category-row";
+
+const categoryName =
+document.createElement("span");
+
+categoryName.textContent =
+category.name;
+
+const renameButton =
+document.createElement("button");
+
+renameButton.type = "button";
+renameButton.textContent = "Rename";
+
+const deleteButton =
+document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.textContent = "Delete";
+
+renameButton.addEventListener(
+"click",
+() => {
+categoryRow.innerHTML = "";
+
+const renameInput =
+document.createElement("input");
+
+renameInput.type = "text";
+renameInput.value = category.name;
+
+const saveButton =
+document.createElement("button");
+
+saveButton.type = "button";
+saveButton.textContent = "Save";
+
+const cancelButton =
+document.createElement("button");
+
+cancelButton.type = "button";
+cancelButton.textContent = "Cancel";
+
+saveButton.addEventListener(
+"click",
+async () => {
+await window.renameCategory(
+category.id,
+renameInput.value
+);
+}
+);
+
+cancelButton.addEventListener(
+"click",
+async () => {
+await window.loadCategories();
+}
+);
+
+categoryRow.appendChild(renameInput);
+categoryRow.appendChild(saveButton);
+categoryRow.appendChild(cancelButton);
+}
+);
+
+deleteButton.addEventListener(
+"click",
+async () => {
+await window.deleteCategory(category);
+}
+);
+
+categoryRow.appendChild(categoryName);
+categoryRow.appendChild(
+document.createTextNode(" ")
+);
+categoryRow.appendChild(renameButton);
+categoryRow.appendChild(
+document.createTextNode(" ")
+);
+categoryRow.appendChild(deleteButton);
+
+categoryList.appendChild(categoryRow);
+});
+};
+
+window.renameCategory =
+async function(categoryId, newName) {
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+categoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return false;
+}
+
+const cleanedName =
+newName.trim();
+
+if (!cleanedName) {
+categoryMessage.textContent =
+"Category name cannot be blank.";
+return false;
+}
+
+categoryMessage.textContent =
+"Renaming category...";
+
+const { error } =
+await window.supabaseClient
+.from("categories")
+.update({
+name: cleanedName
+})
+.eq("id", categoryId)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (error) {
+categoryMessage.textContent =
+error.message;
+return false;
+}
+
+categoryMessage.textContent =
+"Category renamed successfully.";
+
+await window.loadCategories();
+
+return true;
+};
+
+window.deleteCategory =
+async function(category) {
+const confirmed =
+window.confirm(
+`Delete category "${category.name}"?\n\n` +
+"Items assigned to this category will NOT be deleted. " +
+"They will become uncategorized."
+);
+
+if (!confirmed) {
+return;
+}
+
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+categoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+categoryMessage.textContent =
+"Deleting category...";
+
+const { error } =
+await window.supabaseClient
+.from("categories")
+.delete()
+.eq("id", category.id)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (error) {
+categoryMessage.textContent =
+error.message;
+return;
+}
+
+categoryMessage.textContent =
+"Category deleted successfully.";
+
+await window.loadCategories();
+};
+
+categoryForm.addEventListener(
+"submit",
+async (event) => {
+event.preventDefault();
+event.stopImmediatePropagation();
+
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+categoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+const categoryName =
+categoryNameInput.value.trim();
+
+if (!categoryName) {
+categoryMessage.textContent =
+"Please enter a category name.";
+return;
+}
+
+categoryMessage.textContent =
+"Adding category...";
+
+const { error } =
+await window.supabaseClient
+.from("categories")
+.insert({
+seller_id: session.user.id,
+store_id: store.id,
+name: categoryName
+});
+
+if (error) {
+categoryMessage.textContent =
+error.message;
+return;
+}
+
+categoryForm.reset();
+
+categoryMessage.textContent =
+"Category added successfully.";
+
+await window.loadCategories();
+},
+true
+);
+
+window.getBuyerSlots =
+async function() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+return [];
+}
+
+const { data, error } =
+await window.supabaseClient
+.from("buyer_slots")
+.select("position, item_id")
+.eq("store_id", store.id);
+
+if (error) {
+inventoryMessage.textContent =
+error.message;
+return [];
+}
+
+return data || [];
+};
+
+window.loadInventory =
+async function() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+inventoryList.innerHTML = "";
+inventoryMessage.textContent =
+"No store membership is assigned to this seller account.";
+return;
+}
+
+const [
+itemsResult,
+buyerSlots,
+categories,
+itemImagesResult
+] =
+await Promise.all([
+window.supabaseClient
+.from("items")
+.select(
+"id, name, price, description, image_path, category_id, is_published"
+)
+.eq("store_id", store.id)
+.order(
+"created_at",
+{ ascending: true }
+),
+
+window.getBuyerSlots(),
+
+window.getSellerCategories(),
+
+window.supabaseClient
+.from("item_images")
+.select("item_id")
+.eq("store_id", store.id)
+]);
+
+const { data: items, error } =
+itemsResult;
+
+if (error) {
+inventoryList.textContent =
+error.message;
+return;
+}
+
+if (itemImagesResult.error) {
+inventoryList.textContent =
+itemImagesResult.error.message;
+return;
+}
+
+const itemImageCounts =
+(itemImagesResult.data || []).reduce(
+(counts, row) => {
+counts[row.item_id] =
+(counts[row.item_id] || 0) + 1;
+return counts;
+},
+{}
+);
+
+if (
+!items ||
+items.length === 0
+) {
+inventoryList.textContent =
+"No items uploaded yet.";
+return;
+}
+
+inventoryList.innerHTML = "";
+
+items.forEach((item) => {
+const itemContainer =
+document.createElement("div");
+
+itemContainer.className =
+"inventory-card";
+
+if (item.image_path) {
+const { data: imageData } =
+window.supabaseClient.storage
+.from("product_images")
+.getPublicUrl(item.image_path);
+
+const itemImage =
+document.createElement("img");
+
+itemImage.src =
+imageData.publicUrl;
+itemImage.alt =
+item.name;
+itemImage.width =
+200;
+
+itemContainer.appendChild(itemImage);
+}
+
+const itemName =
+document.createElement("h3");
+
+itemName.textContent =
+item.name;
+
+const itemPrice =
+document.createElement("p");
+
+itemPrice.textContent =
+`$${Number(item.price).toFixed(2)}`;
+
+const itemDescription =
+document.createElement("p");
+
+itemDescription.textContent =
+item.description;
+
+const pictureCountDisplay =
+document.createElement("p");
+
+const pictureCount =
+itemImageCounts[item.id] ||
+(item.image_path ? 1 : 0);
+
+pictureCountDisplay.textContent =
+`Pictures: ${pictureCount}`;
+
+const itemCategoryDisplay =
+document.createElement("p");
+
+const assignedCategory =
+categories.find(
+(category) =>
+Number(category.id) ===
+Number(item.category_id)
+);
+
+itemCategoryDisplay.textContent =
+assignedCategory
+? `Category: ${assignedCategory.name}`
+: "Category: No Category";
+
+const publicationStatus =
+document.createElement("p");
+
+publicationStatus.textContent =
+item.is_published
+? "Status: Published"
+: "Status: Unpublished";
+
+publicationStatus.style.fontWeight =
+"700";
+
+const assignedSlot =
+buyerSlots.find(
+(slot) =>
+slot.item_id === item.id
+);
+
+const positionLabel =
+document.createElement("p");
+
+positionLabel.textContent =
+assignedSlot
+? `Buyer Position: ${assignedSlot.position}`
+: "Buyer Position: Not assigned";
+
+const controls =
+document.createElement("div");
+
+controls.className =
+"inventory-card-controls";
+
+[1, 2, 3].forEach((position) => {
+const positionButton =
+document.createElement("button");
+
+positionButton.type =
+"button";
+
+positionButton.textContent =
+position;
+
+positionButton.disabled =
+!item.is_published;
+
+positionButton.addEventListener(
+"click",
+async () => {
+await window.assignBuyerPosition(
+item.id,
+position
+);
+}
+);
+
+controls.appendChild(
+positionButton
+);
+});
+
+const publicationButton =
+document.createElement("button");
+
+publicationButton.type =
+"button";
+
+publicationButton.textContent =
+item.is_published
+? "Unpublish"
+: "Publish";
+
+publicationButton.addEventListener(
+"click",
+async () => {
+await window.setItemPublished(
+item,
+!item.is_published
+);
+}
+);
+
+const editButton =
+document.createElement("button");
+
+editButton.type =
+"button";
+
+editButton.textContent =
+"Edit";
+
+editButton.addEventListener(
+"click",
+async () => {
+inventoryMessage.textContent = "";
+
+itemContainer.classList.add(
+"inventory-card-editing"
+);
+
+await showItemEditor(
+itemContainer,
+item,
+categories
+);
+}
+);
+
+const deleteButton =
+document.createElement("button");
+
+deleteButton.type =
+"button";
+
+deleteButton.textContent =
+"Delete";
+
+deleteButton.addEventListener(
+"click",
+async () => {
+await window.deleteItem(item);
+}
+);
+
+const itemActionMessage =
+document.createElement("p");
+
+itemActionMessage.id =
+`inventory-item-message-${item.id}`;
+
+itemActionMessage.className =
+"inventory-card-message";
+
+controls.appendChild(
+publicationButton
+);
+
+controls.appendChild(
+editButton
+);
+
+controls.appendChild(
+deleteButton
+);
+
+itemContainer.appendChild(
+itemName
+);
+
+itemContainer.appendChild(
+itemPrice
+);
+
+itemContainer.appendChild(
+itemDescription
+);
+
+itemContainer.appendChild(
+pictureCountDisplay
+);
+
+itemContainer.appendChild(
+itemCategoryDisplay
+);
+
+itemContainer.appendChild(
+publicationStatus
+);
+
+itemContainer.appendChild(
+positionLabel
+);
+
+itemContainer.appendChild(
+controls
+);
+
+itemContainer.appendChild(
+itemActionMessage
+);
+
+inventoryList.appendChild(
+itemContainer
+);
+});
+};
+
+window.updateItem =
+async function(
+item,
+newName,
+newPrice,
+newDescription,
+newCategoryId
+) {
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+inventoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return false;
+}
+
+const cleanedName =
+newName.trim();
+
+const cleanedDescription =
+newDescription.trim();
+
+if (!cleanedName) {
+inventoryMessage.textContent =
+"Item name cannot be blank.";
+return false;
+}
+
+if (
+newPrice === "" ||
+Number.isNaN(Number(newPrice)) ||
+Number(newPrice) < 0
+) {
+inventoryMessage.textContent =
+"Please enter a valid price.";
+return false;
+}
+
+if (!cleanedDescription) {
+inventoryMessage.textContent =
+"Description cannot be blank.";
+return false;
+}
+
+if (
+cleanedDescription.length >
+ITEM_DESCRIPTION_MAX_LENGTH
+) {
+inventoryMessage.textContent =
+`Description must be ${ITEM_DESCRIPTION_MAX_LENGTH} characters or fewer.`;
+return false;
+}
+
+const categoryId =
+newCategoryId
+? Number(newCategoryId)
+: null;
+
+inventoryMessage.textContent =
+"Saving item changes...";
+
+const { error } =
+await window.supabaseClient
+.from("items")
+.update({
+name: cleanedName,
+price: Number(newPrice),
+description: cleanedDescription,
+category_id: categoryId
+})
+.eq("id", item.id)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (error) {
+inventoryMessage.textContent =
+error.message;
+return false;
+}
+
+await window.loadInventory();
+
+inventoryMessage.textContent =
+"Item updated successfully.";
+
+return true;
+};
+
+window.setItemPublished =
+async function(
+item,
+shouldPublish
+) {
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+inventoryMessage.textContent =
+"You must be logged in with a store assigned.";
+return false;
+}
+
+inventoryMessage.textContent =
+shouldPublish
+? "Publishing item..."
+: "Unpublishing item...";
+
+const { error } =
+await window.supabaseClient
+.from("items")
+.update({
+is_published: shouldPublish
+})
+.eq("id", item.id)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (error) {
+inventoryMessage.textContent =
+error.message;
+return false;
+}
+
+const {
+error: slotUpdateError
+} =
+await window.supabaseClient
+.from("buyer_slots")
+.update({
+item_id: shouldPublish
+? item.id
+: null
+})
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id)
+.eq("item_id", item.id);
+
+inventoryMessage.textContent =
+slotUpdateError
+? (
+shouldPublish
+? "Item published, but the buyer page realtime refresh signal failed."
+: "Item unpublished, but its Buyer Position could not be cleared."
+)
+: (
+shouldPublish
+? "Item published successfully."
+: "Item unpublished successfully."
+);
+
+await window.loadInventory();
+
+return true;
+};
+
+window.assignBuyerPosition =
+async function(
+itemId,
+position
+) {
+const itemMessageBefore =
+document.getElementById(
+`inventory-item-message-${itemId}`
+);
+
+inventoryMessage.textContent = "";
+
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+`Assigning item to Buyer Position ${position}...`;
+}
+
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+"You must be logged in with a store assigned.";
+} else {
+inventoryMessage.textContent =
+"You must be logged in with a store assigned.";
+}
+
+return false;
+}
+
+const {
+data: itemRow,
+error: itemReadError
+} =
+await window.supabaseClient
+.from("items")
+.select("is_published")
+.eq("id", itemId)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id)
+.maybeSingle();
+
+if (itemReadError) {
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+itemReadError.message;
+} else {
+inventoryMessage.textContent =
+itemReadError.message;
+}
+
+return false;
+}
+
+if (!itemRow?.is_published) {
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+"Publish this item before assigning a Buyer Position.";
+} else {
+inventoryMessage.textContent =
+"Publish this item before assigning a Buyer Position.";
+}
+
+return false;
+}
+
+const {
+error: clearError
+} =
+await window.supabaseClient
+.from("buyer_slots")
+.update({
+item_id: null
+})
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id)
+.eq("item_id", itemId)
+.neq("position", position);
+
+if (clearError) {
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+clearError.message;
+} else {
+inventoryMessage.textContent =
+clearError.message;
+}
+
+return false;
+}
+
+const {
+error: assignError
+} =
+await window.supabaseClient
+.from("buyer_slots")
+.upsert(
+{
+seller_id: session.user.id,
+store_id: store.id,
+position: position,
+item_id: itemId
+},
+{
+onConflict: "store_id,position"
+}
+);
+
+if (assignError) {
+if (itemMessageBefore) {
+itemMessageBefore.textContent =
+assignError.message;
+} else {
+inventoryMessage.textContent =
+assignError.message;
+}
+
+return false;
+}
+
+await window.loadInventory();
+
+inventoryMessage.textContent = "";
+
+const itemMessageAfter =
+document.getElementById(
+`inventory-item-message-${itemId}`
+);
+
+if (itemMessageAfter) {
+itemMessageAfter.textContent =
+`Item assigned to Buyer Position ${position}.`;
+}
+
+return true;
+};
+
+window.deleteItem =
+async function(item) {
+const confirmed =
+window.confirm(
+`Delete "${item.name}"?\n\n` +
+"This will permanently delete the item and its uploaded images."
+);
+
+if (!confirmed) {
+return false;
+}
+
+const itemMessage =
+document.getElementById(
+`inventory-item-message-${item.id}`
+);
+
+if (itemMessage) {
+itemMessage.textContent =
+"Deleting item...";
+}
+
+inventoryMessage.textContent = "";
+
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+if (itemMessage) {
+itemMessage.textContent =
+"You must be logged in with a store assigned.";
+} else {
+inventoryMessage.textContent =
+"You must be logged in with a store assigned.";
+}
+
+return false;
+}
+
+const {
+data: imageRows,
+error: imageReadError
+} =
+await window.supabaseClient
+.from("item_images")
+.select("image_path")
+.eq("item_id", item.id)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (imageReadError) {
+if (itemMessage) {
+itemMessage.textContent =
+imageReadError.message;
+} else {
+inventoryMessage.textContent =
+imageReadError.message;
+}
+
+return false;
+}
+
+const imagePaths =
+[
+...(imageRows || [])
+.map((row) => row.image_path)
+.filter(Boolean),
+
+item.image_path
+]
+.filter(Boolean);
+
+const uniqueImagePaths =
+[...new Set(imagePaths)];
+
+const {
+error: deleteError
+} =
+await window.supabaseClient
+.from("items")
+.delete()
+.eq("id", item.id)
+.eq("store_id", store.id)
+.eq("seller_id", session.user.id);
+
+if (deleteError) {
+if (itemMessage) {
+itemMessage.textContent =
+deleteError.message;
+} else {
+inventoryMessage.textContent =
+deleteError.message;
+}
+
+return false;
+}
+
+let storageCleanupError =
+null;
+
+if (uniqueImagePaths.length > 0) {
+const {
+error: removeError
+} =
+await window.supabaseClient.storage
+.from("product_images")
+.remove(uniqueImagePaths);
+
+storageCleanupError =
+removeError || null;
+}
+
+const deletedCard =
+itemMessage
+? itemMessage.closest(".inventory-card")
+: null;
+
+const deletedCardIndex =
+deletedCard
+? Array.from(inventoryList.children).indexOf(deletedCard)
+: -1;
+
+await window.loadInventory();
+
+if (storageCleanupError) {
+inventoryMessage.textContent =
+"Item deleted, but one or more image files could not be removed from storage.";
+return true;
+}
+
+inventoryMessage.textContent = "";
+
+const deleteSuccessMessage =
+document.createElement("p");
+
+deleteSuccessMessage.className =
+"inventory-card-message";
+
+deleteSuccessMessage.textContent =
+"Item deleted successfully.";
+
+const remainingCards =
+Array.from(inventoryList.children);
+
+if (
+deletedCardIndex >= 0 &&
+deletedCardIndex < remainingCards.length
+) {
+inventoryList.insertBefore(
+deleteSuccessMessage,
+remainingCards[deletedCardIndex]
+);
+} else {
+inventoryList.appendChild(
+deleteSuccessMessage
+);
+}
+
+window.setTimeout(
+() => {
+deleteSuccessMessage.remove();
+},
+4000
+);
+
+return true;
+};
+
+itemForm.addEventListener(
+"submit",
+async (event) => {
+event.preventDefault();
+event.stopImmediatePropagation();
+
+itemMessage.textContent =
+"Adding item...";
+
+const session =
+await getSetupSession();
+
+const store =
+await loadCurrentStoreIdentity();
+
+if (!session || !store) {
+itemMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+const imageFiles =
+[1, 2, 3, 4].map(
+(number) =>
+document.getElementById(
+`item-image-${number}`
+).files[0] || null
+);
+
+if (!imageFiles[0]) {
+itemMessage.textContent =
+"Product Picture 1 is required.";
+return;
+}
+
+const selectedImages =
+imageFiles
+.map(
+(file, index) => ({
+file,
+sortOrder: index + 1
+})
+)
+.filter(
+(entry) =>
+entry.file !== null
+);
+
+const name =
+document.getElementById(
+"item-name"
+).value.trim();
+
+const rawPrice =
+document.getElementById(
+"item-price"
+).value;
+
+const price =
+Number(rawPrice);
+
+const description =
+document.getElementById(
+"item-description"
+).value.trim();
+
+const categoryId =
+itemCategory.value
+? Number(itemCategory.value)
+: null;
+
+if (!name) {
+itemMessage.textContent =
+"Item name cannot be blank.";
+return;
+}
+
+if (
+rawPrice === "" ||
+Number.isNaN(price) ||
+price < 0
+) {
+itemMessage.textContent =
+"Please enter a valid price.";
+return;
+}
+
+if (!description) {
+itemMessage.textContent =
+"Description cannot be blank.";
+return;
+}
+
+if (
+description.length >
+ITEM_DESCRIPTION_MAX_LENGTH
+) {
+itemMessage.textContent =
+`Description must be ${ITEM_DESCRIPTION_MAX_LENGTH} characters or fewer.`;
+return;
+}
+
+const uploadedImages = [];
+
+for (
+const image
+of selectedImages
+) {
+itemMessage.textContent =
+`Uploading picture ${image.sortOrder}...`;
+
+const extension =
+image.file.name
+.split(".")
+.pop();
+
+const filePath =
+`${session.user.id}/` +
+`${Date.now()}-` +
+`${image.sortOrder}.` +
+`${extension}`;
+
+const {
+error: uploadError
+} =
+await window.supabaseClient.storage
+.from("product_images")
+.upload(
+filePath,
+image.file
+);
+
+if (uploadError) {
+if (
+uploadedImages.length > 0
+) {
+await window.supabaseClient.storage
+.from("product_images")
+.remove(
+uploadedImages.map(
+(uploadedImage) =>
+uploadedImage.imagePath
+)
+);
+}
+
+itemMessage.textContent =
+`Picture ${image.sortOrder} could not be uploaded: ` +
+uploadError.message;
+
+return;
+}
+
+uploadedImages.push({
+imagePath: filePath,
+sortOrder: image.sortOrder
+});
+}
+
+itemMessage.textContent =
+"Creating item...";
+
+const {
+data: insertedItem,
+error: insertError
+} =
+await window.supabaseClient
+.from("items")
+.insert({
+seller_id:
+session.user.id,
+
+store_id:
+store.id,
+
+name,
+price,
+description,
+
+image_path:
+uploadedImages[0].imagePath,
+
+category_id:
+categoryId,
+
+is_published:
+true
+})
+.select("id")
+.single();
+
+if (insertError) {
+await window.supabaseClient.storage
+.from("product_images")
+.remove(
+uploadedImages.map(
+(uploadedImage) =>
+uploadedImage.imagePath
+)
+);
+
+itemMessage.textContent =
+insertError.message;
+
+return;
+}
+
+itemMessage.textContent =
+"Creating image records...";
+
+const imageRecords =
+uploadedImages.map(
+(image) => ({
+seller_id:
+session.user.id,
+
+store_id:
+store.id,
+
+item_id:
+insertedItem.id,
+
+image_path:
+image.imagePath,
+
+sort_order:
+image.sortOrder
+})
+);
+
+const {
+error: imageRecordError
+} =
+await window.supabaseClient
+.from("item_images")
+.insert(imageRecords);
+
+if (imageRecordError) {
+const {
+error: rollbackItemError
+} =
+await window.supabaseClient
+.from("items")
+.delete()
+.eq(
+"id",
+insertedItem.id
+)
+.eq(
+"store_id",
+store.id
+)
+.eq(
+"seller_id",
+session.user.id
+);
+
+const {
+error: rollbackImagesError
+} =
+await window.supabaseClient.storage
+.from("product_images")
+.remove(
+uploadedImages.map(
+(uploadedImage) =>
+uploadedImage.imagePath
+)
+);
+
+if (
+rollbackItemError ||
+rollbackImagesError
+) {
+itemMessage.textContent =
+"Image records could not be created, and automatic cleanup was incomplete. Stop here and inspect Supabase.";
+
+return;
+}
+
+itemMessage.textContent =
+"Item was not added because its image records could not be created: " +
+imageRecordError.message;
+
+return;
+}
+
+itemForm.reset();
+
+itemMessage.textContent =
+`Item added successfully with ${uploadedImages.length} picture` +
+(
+uploadedImages.length === 1
+? "."
+: "s."
+);
+
+await window.loadInventory();
+
+await loadItemCategoryOptions();
+},
+true
+);
+
+window.supabaseClient.auth
+.onAuthStateChange(
+(event) => {
+if (
+event === "SIGNED_OUT"
+) {
+currentResolvedStore =
+null;
+}
+
+loadCurrentStoreIdentity();
+}
+);
+
+populateBusinessTimeOptions();
+
+businessDays.forEach((day) => {
+setBusinessDayDefaults(day);
+});
+
+updateAllBusinessDayStates();
+
+loadCurrentStoreIdentity();
+</script>
 </body>
 </html>

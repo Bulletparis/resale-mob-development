@@ -8,6 +8,152 @@ const buyerSortAnchor =
     "buyer-sort-anchor"
   );
 
+const buyerPageTitle =
+  document.getElementById(
+    "buyer-page-title"
+  );
+
+const buyerInfoMenuWrapper =
+  document.getElementById(
+    "buyer-info-menu-wrapper"
+  );
+
+const buyerInfoButton =
+  document.getElementById(
+    "buyer-info-button"
+  );
+
+const buyerInfoDropdown =
+  document.getElementById(
+    "buyer-info-dropdown"
+  );
+
+const buyerInfoModal =
+  document.getElementById(
+    "buyer-info-modal"
+  );
+
+const buyerInfoModalTitle =
+  document.getElementById(
+    "buyer-info-modal-title"
+  );
+
+const buyerInfoModalContent =
+  document.getElementById(
+    "buyer-info-modal-content"
+  );
+
+const buyerInfoModalX =
+  document.getElementById(
+    "buyer-info-modal-x"
+  );
+
+const buyerInfoModalClose =
+  document.getElementById(
+    "buyer-info-modal-close"
+  );
+
+const themeColorMeta =
+  document.getElementById(
+    "theme-color-meta"
+  );
+
+let currentBusinessInfoContent =
+  null;
+
+let currentBusinessHoursContent =
+  null;
+
+let currentBuyerStore =
+  null;
+
+let buyerRealtimeChannels =
+  [];
+
+function getStoreSlugFromPageAddress() {
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const querySlug =
+    params
+      .get("store")
+      ?.trim();
+
+  if (querySlug) {
+    return querySlug;
+  }
+
+  const pathParts =
+    window.location.pathname
+      .split("/")
+      .filter(Boolean);
+
+  const storeIndex =
+    pathParts.indexOf("store");
+
+  if (
+    storeIndex >= 0 &&
+    pathParts[storeIndex + 1]
+  ) {
+    return decodeURIComponent(
+      pathParts[storeIndex + 1]
+    );
+  }
+
+  return "sawdust-shawn";
+}
+
+async function resolveBuyerStore() {
+  if (currentBuyerStore) {
+    return currentBuyerStore;
+  }
+
+  const storeSlug =
+    getStoreSlugFromPageAddress();
+
+  const {
+    data: store,
+    error
+  } =
+    await window.supabaseBuyerClient
+      .from("stores")
+      .select(
+        "id, name, slug, status"
+      )
+      .eq(
+        "slug",
+        storeSlug
+      )
+      .eq(
+        "status",
+        "active"
+      )
+      .maybeSingle();
+
+  if (error) {
+    buyerMessage.textContent =
+      error.message;
+
+    return null;
+  }
+
+  if (!store) {
+    clearBuyerPositions();
+
+    buyerMessage.textContent =
+      "Store not found.";
+
+    return null;
+  }
+
+  currentBuyerStore =
+    store;
+
+  return currentBuyerStore;
+}
+
 function getSortFromPageAddress() {
   const hash =
     window.location.hash
@@ -247,8 +393,8 @@ function createBuyerSortControls() {
 }
 
 function createSlideButton(
-  word,
-  symbol
+  symbol,
+  accessibleLabel
 ) {
   const button =
     document.createElement(
@@ -261,37 +407,565 @@ function createSlideButton(
   button.className =
     "buyer-slide-button";
 
-  const wordSpan =
-    document.createElement(
-      "span"
-    );
-
-  wordSpan.className =
-    "buyer-slide-word";
-
-  wordSpan.textContent =
-    word;
-
-  const symbolSpan =
-    document.createElement(
-      "span"
-    );
-
-  symbolSpan.className =
-    "buyer-slide-symbol";
-
-  symbolSpan.textContent =
+  button.textContent =
     symbol;
 
-  button.appendChild(
-    wordSpan
+  button.setAttribute(
+    "aria-label",
+    accessibleLabel
   );
 
-  button.appendChild(
-    symbolSpan
-  );
+  button.title =
+    accessibleLabel;
 
   return button;
+}
+
+function createInfoLine(
+  container,
+  label,
+  value,
+  className =
+    "buyer-info-line"
+) {
+  if (!value) {
+    return;
+  }
+
+  const line =
+    document.createElement(
+      "p"
+    );
+
+  line.className =
+    className;
+
+  if (label) {
+    const strong =
+      document.createElement(
+        "strong"
+      );
+
+    strong.textContent =
+      `${label}: `;
+
+    line.appendChild(
+      strong
+    );
+  }
+
+  line.appendChild(
+    document.createTextNode(
+      value
+    )
+  );
+
+  container.appendChild(
+    line
+  );
+}
+
+function formatBusinessTime(
+  timeValue
+) {
+  if (!timeValue) {
+    return "";
+  }
+
+  const parts =
+    timeValue
+      .slice(0, 5)
+      .split(":");
+
+  let hour =
+    Number(parts[0]);
+
+  const minute =
+    parts[1];
+
+  const suffix =
+    hour >= 12
+      ? "PM"
+      : "AM";
+
+  hour =
+    hour % 12;
+
+  if (hour === 0) {
+    hour = 12;
+  }
+
+  return `${hour}:${minute} ${suffix}`;
+}
+
+function buildBusinessInfoContent(
+  settings
+) {
+  if (!settings) {
+    return null;
+  }
+
+  const container =
+    document.createElement(
+      "div"
+    );
+
+  let visibleInformation =
+    false;
+
+  if (
+    settings.online_sales_only ===
+    true
+  ) {
+    createInfoLine(
+      container,
+      "",
+      "Online Sales Only",
+      "buyer-info-line buyer-online-only"
+    );
+
+    visibleInformation =
+      true;
+  } else {
+    if (
+      settings.business_street
+    ) {
+      createInfoLine(
+        container,
+        "Street Address",
+        settings.business_street
+      );
+
+      visibleInformation =
+        true;
+    }
+
+    if (
+      settings.business_city
+    ) {
+      createInfoLine(
+        container,
+        "City",
+        settings.business_city
+      );
+
+      visibleInformation =
+        true;
+    }
+
+    if (
+      settings.business_state
+    ) {
+      createInfoLine(
+        container,
+        "State",
+        settings.business_state
+      );
+
+      visibleInformation =
+        true;
+    }
+
+    if (
+      settings.business_zip
+    ) {
+      createInfoLine(
+        container,
+        "ZIP",
+        settings.business_zip
+      );
+
+      visibleInformation =
+        true;
+    }
+  }
+
+  if (
+    settings.business_phone
+  ) {
+    createInfoLine(
+      container,
+      "Phone",
+      settings.business_phone
+    );
+
+    visibleInformation =
+      true;
+  }
+
+  if (
+    settings.business_email
+  ) {
+    createInfoLine(
+      container,
+      "Email",
+      settings.business_email
+    );
+
+    visibleInformation =
+      true;
+  }
+
+  if (!visibleInformation) {
+    return null;
+  }
+
+  return container;
+}
+
+function buildBusinessHoursContent(
+  hours
+) {
+  const savedHours =
+    hours || [];
+
+  const hasOpenDay =
+    savedHours.some(
+      (row) =>
+        row.is_open ===
+        true
+    );
+
+  if (!hasOpenDay) {
+    return null;
+  }
+
+  const container =
+    document.createElement(
+      "div"
+    );
+
+  const days = [
+    {
+      name: "Monday",
+      databaseDay: 1
+    },
+    {
+      name: "Tuesday",
+      databaseDay: 2
+    },
+    {
+      name: "Wednesday",
+      databaseDay: 3
+    },
+    {
+      name: "Thursday",
+      databaseDay: 4
+    },
+    {
+      name: "Friday",
+      databaseDay: 5
+    },
+    {
+      name: "Saturday",
+      databaseDay: 6
+    },
+    {
+      name: "Sunday",
+      databaseDay: 0
+    }
+  ];
+
+  days.forEach(
+    (day) => {
+      const savedDay =
+        savedHours.find(
+          (row) =>
+            Number(
+              row.day_of_week
+            ) ===
+            day.databaseDay
+        );
+
+      const line =
+        document.createElement(
+          "p"
+        );
+
+      line.className =
+        "buyer-hours-line";
+
+      const strong =
+        document.createElement(
+          "strong"
+        );
+
+      strong.textContent =
+        `${day.name}: `;
+
+      line.appendChild(
+        strong
+      );
+
+      if (
+        !savedDay ||
+        savedDay.is_open !==
+          true
+      ) {
+        line.appendChild(
+          document.createTextNode(
+            "Closed"
+          )
+        );
+      } else {
+        const opening =
+          formatBusinessTime(
+            savedDay.open_time
+          );
+
+        const closing =
+          formatBusinessTime(
+            savedDay.close_time
+          );
+
+        const displayHours =
+          opening &&
+          closing
+            ? `${opening} – ${closing}`
+            : "Open";
+
+        line.appendChild(
+          document.createTextNode(
+            displayHours
+          )
+        );
+      }
+
+      container.appendChild(
+        line
+      );
+    }
+  );
+
+  return container;
+}
+
+function closeInfoDropdown() {
+  buyerInfoDropdown.hidden =
+    true;
+
+  buyerInfoButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+}
+
+function openInfoModal(
+  title,
+  content
+) {
+  buyerInfoModalTitle.textContent =
+    title;
+
+  buyerInfoModalContent.innerHTML =
+    "";
+
+  buyerInfoModalContent.appendChild(
+    content.cloneNode(true)
+  );
+
+  buyerInfoModal.hidden =
+    false;
+
+  closeInfoDropdown();
+}
+
+function closeInfoModal() {
+  buyerInfoModal.hidden =
+    true;
+
+  buyerInfoModalContent.innerHTML =
+    "";
+}
+
+function rebuildInfoMenu() {
+  buyerInfoDropdown.innerHTML =
+    "";
+
+  const options =
+    [];
+
+  if (
+    currentBusinessInfoContent
+  ) {
+    options.push({
+      title:
+        "Business Info",
+      content:
+        currentBusinessInfoContent
+    });
+  }
+
+  if (
+    currentBusinessHoursContent
+  ) {
+    options.push({
+      title:
+        "Business Hours",
+      content:
+        currentBusinessHoursContent
+    });
+  }
+
+  if (
+    options.length === 0
+  ) {
+    buyerInfoMenuWrapper.hidden =
+      true;
+
+    closeInfoDropdown();
+
+    return;
+  }
+
+  buyerInfoMenuWrapper.hidden =
+    false;
+
+  options.forEach(
+    (option) => {
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.className =
+        "buyer-info-menu-option";
+
+      button.textContent =
+        option.title;
+
+      button.addEventListener(
+        "click",
+        () => {
+          openInfoModal(
+            option.title,
+            option.content
+          );
+        }
+      );
+
+      buyerInfoDropdown.appendChild(
+        button
+      );
+    }
+  );
+}
+
+async function loadBuyerStorefront() {
+  buyerPageTitle.textContent =
+    "Resale Mob";
+
+  document.body.style.background =
+    "#ffffff";
+
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute(
+      "content",
+      "#ffffff"
+    );
+  }
+
+  currentBusinessInfoContent =
+    null;
+
+  currentBusinessHoursContent =
+    null;
+
+  rebuildInfoMenu();
+
+  const store =
+    await resolveBuyerStore();
+
+  if (!store) {
+    return;
+  }
+
+  const {
+    data: settings,
+    error: settingsError
+  } =
+    await window.supabaseBuyerClient
+      .from(
+        "seller_page_settings"
+      )
+      .select(
+        "page_title, background_color, online_sales_only, business_street, business_city, business_state, business_zip, business_phone, business_email"
+      )
+      .eq(
+        "store_id",
+        store.id
+      )
+      .maybeSingle();
+
+  if (settingsError) {
+    console.error(
+      "Could not load seller page settings:",
+      settingsError.message
+    );
+
+    return;
+  }
+
+  buyerPageTitle.textContent =
+    settings?.page_title ||
+    store.name ||
+    "Resale Mob";
+
+  const backgroundColor =
+    settings?.background_color ||
+    "#ffffff";
+
+  document.body.style.background =
+    backgroundColor;
+
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute(
+      "content",
+      backgroundColor
+    );
+  }
+
+  currentBusinessInfoContent =
+    buildBusinessInfoContent(
+      settings
+    );
+
+  const {
+    data: hours,
+    error: hoursError
+  } =
+    await window.supabaseBuyerClient
+      .from(
+        "seller_hours"
+      )
+      .select(
+        "day_of_week, is_open, open_time, close_time"
+      )
+      .eq(
+        "store_id",
+        store.id
+      );
+
+  if (hoursError) {
+    console.error(
+      "Could not load business hours:",
+      hoursError.message
+    );
+
+    rebuildInfoMenu();
+
+    return;
+  }
+
+  currentBusinessHoursContent =
+    buildBusinessHoursContent(
+      hours || []
+    );
+
+  rebuildInfoMenu();
 }
 
 function renderBuyerItem(
@@ -426,14 +1100,9 @@ function renderBuyerItem(
 
     const previousButton =
       createSlideButton(
-        "Previous",
-        "‹"
+        "‹",
+        "Previous image"
       );
-
-    previousButton.setAttribute(
-      "aria-label",
-      "Previous image"
-    );
 
     const imageCounter =
       document.createElement(
@@ -445,14 +1114,9 @@ function renderBuyerItem(
 
     const nextButton =
       createSlideButton(
-        "Next",
-        "›"
+        "›",
+        "Next image"
       );
-
-    nextButton.setAttribute(
-      "aria-label",
-      "Next image"
-    );
 
     function showImage() {
       const currentImage =
@@ -694,6 +1358,13 @@ async function loadBuyerItems() {
 
   clearBuyerPositions();
 
+  const store =
+    await resolveBuyerStore();
+
+  if (!store) {
+    return;
+  }
+
   const {
     data: slots,
     error: slotsError
@@ -702,6 +1373,10 @@ async function loadBuyerItems() {
       .from("buyer_slots")
       .select(
         "position, item_id"
+      )
+      .eq(
+        "store_id",
+        store.id
       )
       .not(
         "item_id",
@@ -747,6 +1422,10 @@ async function loadBuyerItems() {
         .select(
           "id, name, price, description, image_path"
         )
+        .eq(
+          "store_id",
+          store.id
+        )
         .in(
           "id",
           itemIds
@@ -756,6 +1435,10 @@ async function loadBuyerItems() {
         .from("item_images")
         .select(
           "item_id, image_path, sort_order"
+        )
+        .eq(
+          "store_id",
+          store.id
         )
         .in(
           "item_id",
@@ -847,66 +1530,223 @@ async function loadBuyerItems() {
   clearBuyerMessage();
 }
 
-window.supabaseBuyerClient
-  .channel(
-    "buyer-slots-live"
-  )
-  .on(
-    "postgres_changes",
-    {
-      event:
-        "*",
-      schema:
-        "public",
-      table:
-        "buyer_slots"
-    },
-    () => {
-      loadBuyerItems();
+buyerInfoButton.addEventListener(
+  "click",
+  () => {
+    const willOpen =
+      buyerInfoDropdown.hidden;
+
+    buyerInfoDropdown.hidden =
+      !willOpen;
+
+    buyerInfoButton.setAttribute(
+      "aria-expanded",
+      willOpen
+        ? "true"
+        : "false"
+    );
+  }
+);
+
+buyerInfoModalX.addEventListener(
+  "click",
+  closeInfoModal
+);
+
+buyerInfoModalClose.addEventListener(
+  "click",
+  closeInfoModal
+);
+
+buyerInfoModal.addEventListener(
+  "click",
+  (event) => {
+    if (
+      event.target ===
+      buyerInfoModal
+    ) {
+      closeInfoModal();
     }
-  )
-  .subscribe();
+  }
+);
 
-window.supabaseBuyerClient
-  .channel(
-    "buyer-item-images-live"
-  )
-  .on(
-    "postgres_changes",
-    {
-      event:
-        "*",
-      schema:
-        "public",
-      table:
-        "item_images"
-    },
-    () => {
-      loadBuyerItems();
+document.addEventListener(
+  "click",
+  (event) => {
+    if (
+      !buyerInfoMenuWrapper
+        .contains(
+          event.target
+        )
+    ) {
+      closeInfoDropdown();
     }
-  )
-  .subscribe();
+  }
+);
 
-window.supabaseBuyerClient
-  .channel(
-    "buyer-items-live"
-  )
-  .on(
-    "postgres_changes",
-    {
-      event:
-        "*",
-      schema:
-        "public",
-      table:
-        "items"
-    },
-    () => {
-      loadBuyerItems();
+async function subscribeBuyerRealtime() {
+  const store =
+    await resolveBuyerStore();
+
+  if (!store) {
+    return;
+  }
+
+  buyerRealtimeChannels.forEach(
+    (channel) => {
+      window.supabaseBuyerClient
+        .removeChannel(
+          channel
+        );
     }
-  )
-  .subscribe();
+  );
 
-createBuyerSortControls();
+  buyerRealtimeChannels =
+    [];
 
-loadBuyerItems();
+  const storeFilter =
+    `store_id=eq.${store.id}`;
+
+  const slotChannel =
+    window.supabaseBuyerClient
+      .channel(
+        `buyer-slots-live-${store.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "*",
+          schema:
+            "public",
+          table:
+            "buyer_slots",
+          filter:
+            storeFilter
+        },
+        () => {
+          loadBuyerItems();
+        }
+      )
+      .subscribe();
+
+  const imageChannel =
+    window.supabaseBuyerClient
+      .channel(
+        `buyer-item-images-live-${store.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "*",
+          schema:
+            "public",
+          table:
+            "item_images",
+          filter:
+            storeFilter
+        },
+        () => {
+          loadBuyerItems();
+        }
+      )
+      .subscribe();
+
+  const itemChannel =
+    window.supabaseBuyerClient
+      .channel(
+        `buyer-items-live-${store.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "*",
+          schema:
+            "public",
+          table:
+            "items",
+          filter:
+            storeFilter
+        },
+        () => {
+          loadBuyerItems();
+        }
+      )
+      .subscribe();
+
+  const settingsChannel =
+    window.supabaseBuyerClient
+      .channel(
+        `buyer-page-settings-live-${store.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "*",
+          schema:
+            "public",
+          table:
+            "seller_page_settings",
+          filter:
+            storeFilter
+        },
+        () => {
+          loadBuyerStorefront();
+        }
+      )
+      .subscribe();
+
+  const hoursChannel =
+    window.supabaseBuyerClient
+      .channel(
+        `buyer-business-hours-live-${store.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "*",
+          schema:
+            "public",
+          table:
+            "seller_hours",
+          filter:
+            storeFilter
+        },
+        () => {
+          loadBuyerStorefront();
+        }
+      )
+      .subscribe();
+
+  buyerRealtimeChannels.push(
+    slotChannel,
+    imageChannel,
+    itemChannel,
+    settingsChannel,
+    hoursChannel
+  );
+}
+
+async function initializeBuyerApp() {
+  createBuyerSortControls();
+
+  const store =
+    await resolveBuyerStore();
+
+  if (!store) {
+    return;
+  }
+
+  await Promise.all([
+    loadBuyerStorefront(),
+    loadBuyerItems()
+  ]);
+
+  await subscribeBuyerRealtime();
+}
+
+initializeBuyerApp();
