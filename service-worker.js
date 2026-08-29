@@ -1,11 +1,13 @@
-const CACHE_NAME = "resale-mob-stage1-v1";
+const CACHE_NAME = "resale-mob-runtime";
 
 const STATIC_FILES = [
   "./",
   "./index.html",
+  "./seller.html",
   "./manifest.json",
   "./supabase.js",
   "./buyer.js",
+  "./seller.js",
   "./icon-192.png",
   "./icon-512.png"
 ];
@@ -36,11 +38,20 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
+  if (request.method !== "GET") {
+    return;
+  }
+
+  if (url.origin !== self.location.origin) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   if (request.mode === "navigate") {
-    if (url.pathname.endsWith("/seller.html")) {
-      event.respondWith(fetch(request));
-      return;
-    }
+    const fallbackFile =
+      url.pathname.endsWith("/seller.html")
+        ? "./seller.html"
+        : "./index.html";
 
     event.respondWith(
       fetch(request)
@@ -48,20 +59,30 @@ self.addEventListener("fetch", (event) => {
           const copy = response.clone();
 
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put("./index.html", copy);
+            cache.put(fallbackFile, copy);
           });
 
           return response;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match(fallbackFile))
     );
 
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      return cachedResponse || fetch(request);
-    })
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, copy);
+          });
+        }
+
+        return response;
+      })
+      .catch(() => caches.match(request))
   );
 });
