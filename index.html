@@ -73,6 +73,101 @@
       flex-shrink: 0;
     }
 
+    #buyer-header-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    #buyer-account-entry {
+      position: relative;
+    }
+
+    #buyer-account-entry summary {
+      list-style: none;
+      padding: 7px 0;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    #buyer-account-entry summary::-webkit-details-marker {
+      display: none;
+    }
+
+    #buyer-account-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 30;
+
+      width: min(
+        320px,
+        calc(100vw - 40px)
+      );
+
+      padding: 16px;
+
+      text-align: left;
+      background: #ffffff;
+
+      border:
+        1px solid #cfcfcf;
+
+      border-radius: 10px;
+
+      box-shadow:
+        0 4px 14px
+        rgba(
+          0,
+          0,
+          0,
+          0.12
+        );
+    }
+
+    #buyer-account-panel h2 {
+      margin:
+        0 0 12px;
+    }
+
+    #buyer-account-panel form {
+      display: grid;
+      gap: 8px;
+    }
+
+    #buyer-account-panel input {
+      width: 100%;
+      padding: 9px;
+      font: inherit;
+    }
+
+    #buyer-account-panel button {
+      min-height: 38px;
+      padding: 7px 10px;
+      font: inherit;
+    }
+
+    #buyer-account-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    #buyer-account-links button {
+      min-height: 0;
+      padding: 0;
+
+      background: transparent;
+      border: 0;
+
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
     #buyer-info-button {
       min-height: 36px;
       padding: 6px 12px;
@@ -201,31 +296,274 @@
       font-weight: 700;
     }
 
-    #buyer-sort-anchor {
-      margin-bottom: 18px;
+    #buyer-featured-section,
+    #buyer-catalog-section {
+      width: 100%;
     }
 
-    /*
-      CURRENT DEVELOPMENT BENCHMARK
+    #buyer-featured-section {
+      padding: 14px;
 
-      150px is the provisional minimum
-      buyer-card width.
+      border:
+        4px double
+        #111111;
 
-      It is intentionally easy to change
-      after later mobile/design review.
-    */
-    #buyer-grid {
+      outline:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+
+      outline-offset: -7px;
+
+      border-radius: 14px;
+
+      box-shadow:
+        inset 0 0 0 1px
+        rgba(
+          255,
+          255,
+          255,
+          0.75
+        ),
+        0 2px 8px
+        rgba(
+          0,
+          0,
+          0,
+          0.12
+        );
+    }
+
+    #buyer-featured-title {
+      margin:
+        0 0 14px;
+
+      text-align: center;
+    }
+
+    #buyer-featured-carousel {
+      position: relative;
+
+      width: 100%;
+    }
+
+    .buyer-featured-carousel-button {
+      position: absolute;
+      top: 38%;
+
+      z-index: 10;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 34px;
+      min-width: 34px;
+      height: 54px;
+      min-height: 54px;
+
+      padding: 0;
+
+      border: 0;
+      background: transparent;
+
+      color: #000000;
+
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+
+      cursor: pointer;
+
+      transform:
+        translateY(-50%);
+
+      -webkit-text-stroke:
+        2px #ffffff;
+
+      paint-order:
+        stroke fill;
+    }
+
+    #buyer-featured-previous {
+      left: -12px;
+    }
+
+    #buyer-featured-next {
+      right: -12px;
+    }
+
+    .buyer-featured-carousel-button[hidden] {
+      display: none;
+    }
+
+    .buyer-featured-carousel-button:disabled {
+      opacity: 0.28;
+      cursor: default;
+    }
+
+    #buyer-catalog-section {
+      margin-top: 24px;
+    }
+
+    #buyer-catalog-toolbar {
       display: grid;
 
       grid-template-columns:
         repeat(
-          auto-fit,
-          minmax(
-            min(
-              150px,
-              100%
+          2,
+          minmax(0, 1fr)
+        );
+
+      gap: 12px;
+
+      align-items: start;
+
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    #buyer-catalog-title-zone {
+      min-width: 0;
+      grid-column: 1;
+    }
+
+    #buyer-catalog-title {
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    #buyer-catalog-reserved-zone {
+      display: none;
+    }
+
+    #buyer-catalog-controls-zone {
+      min-width: 0;
+      width: 100%;
+      grid-column: 2;
+    }
+
+    #buyer-catalog-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      gap: 8px 10px;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+    }
+
+    .buyer-catalog-subsection {
+      display: grid;
+      gap: 5px;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+
+    #buyer-catalog-category-sort-section {
+      width: 100px;
+    }
+
+    #buyer-catalog-price-section {
+      width: 50px;
+    }
+
+    #buyer-catalog-clear-section {
+      width: 40px;
+      align-self: end;
+    }
+
+    .buyer-catalog-control-group {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .buyer-catalog-control-group label {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+
+    .buyer-catalog-control-group select,
+    .buyer-catalog-control-group input,
+    #buyer-catalog-clear-button {
+      width: 100%;
+      min-width: 0;
+      min-height: 30px;
+      padding: 4px 5px;
+      font: inherit;
+      font-size: 10px;
+    }
+
+    #buyer-catalog-clear-button {
+      cursor: pointer;
+    }
+
+    #buyer-featured-message,
+    #buyer-catalog-message {
+      margin: 10px 0 0;
+    }
+
+    /*
+      BUYER CARD WIDTH BENCHMARK
+
+      150px is the minimum
+      buyer-card width.
+    */
+    #buyer-grid {
+      display: grid;
+
+      grid-auto-flow: column;
+
+      grid-auto-columns:
+        max(
+          150px,
+          calc(
+            (100% - 32px) / 3
+          )
+        );
+
+      gap: 16px;
+
+      width: 100%;
+
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+
+      scroll-snap-type:
+        inline mandatory;
+
+      scroll-behavior: smooth;
+
+      scrollbar-width: none;
+    }
+
+    #buyer-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    #buyer-catalog-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fill,
+          clamp(
+            125px,
+            calc(
+              100px + 6.25vw
             ),
-            1fr
+            175px
           )
         );
 
@@ -234,11 +572,251 @@
       align-items: start;
     }
 
+    .buyer-catalog-card {
+      height:
+        clamp(
+          270px,
+          calc(
+            245px + 6.25vw
+          ),
+          320px
+        );
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .buyer-catalog-card .buyer-card-name {
+      flex-shrink: 0;
+    }
+
+    .buyer-catalog-card .buyer-card-price {
+      flex-shrink: 0;
+    }
+
+    .buyer-catalog-description-wrap {
+      position: relative;
+      flex-shrink: 0;
+      min-height: 2.8em;
+      max-height: 2.8em;
+      overflow: hidden;
+    }
+
+    .buyer-catalog-description {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+
+      overflow: hidden;
+    }
+
+    .buyer-catalog-more {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+
+      padding:
+        0 0 0 4px;
+
+      border: 0;
+      background: #ffffff;
+      color: #111111;
+
+      font: inherit;
+      font-size: 10px;
+      font-weight: 700;
+
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      cursor: pointer;
+    }
+
+    .buyer-catalog-open-card {
+      align-self: flex-start;
+
+      margin-top: auto;
+      padding: 4px 0 0;
+
+      border: 0;
+      background: transparent;
+      color: #111111;
+
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      cursor: pointer;
+    }
+
+    #buyer-item-modal {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 16px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.45
+        );
+
+      z-index: 120;
+    }
+
+    #buyer-item-modal[hidden] {
+      display: none;
+    }
+
+    #buyer-item-modal-card {
+      display: flex;
+      flex-direction: column;
+
+      width:
+        min(
+          clamp(
+            280px,
+            calc(
+              171.11px + 31.11vw
+            ),
+            420px
+          ),
+          calc(
+            100vw - 32px
+          )
+        );
+
+      height:
+        min(
+          clamp(
+            400px,
+            calc(
+              166.67px + 66.67vw
+            ),
+            700px
+          ),
+          calc(
+            100vh - 32px
+          )
+        );
+
+      overflow: hidden;
+
+      padding: 16px;
+
+      background: #ffffff;
+
+      border:
+        1px solid #cfcfcf;
+
+      border-radius: 12px;
+
+      box-shadow:
+        0 4px 18px
+        rgba(
+          0,
+          0,
+          0,
+          0.2
+        );
+    }
+
+    #buyer-item-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      flex-shrink: 0;
+
+      margin-bottom: 12px;
+    }
+
+    #buyer-item-modal-title {
+      margin: 0;
+      min-width: 0;
+
+      overflow-wrap: anywhere;
+    }
+
+    #buyer-item-modal-x {
+      flex-shrink: 0;
+
+      min-width: 34px;
+      min-height: 34px;
+
+      padding: 0;
+
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    #buyer-item-modal-content {
+      flex: 1 1 auto;
+      min-height: 0;
+
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      padding-right: 4px;
+    }
+
+    #buyer-item-modal-content img {
+      display: block;
+
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
+
+      object-fit: cover;
+
+      border-radius: 10px;
+    }
+
+    .buyer-item-modal-price {
+      margin:
+        12px 0 10px;
+
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .buyer-item-modal-description {
+      margin: 0;
+
+      font-size: 14px;
+      line-height: 1.45;
+
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #buyer-item-modal-close {
+      flex-shrink: 0;
+
+      margin-top: 12px;
+      min-height: 38px;
+
+      cursor: pointer;
+    }
+
     #buyer-position-1,
     #buyer-position-2,
     #buyer-position-3 {
       width: 100%;
       min-width: 0;
+
+      scroll-snap-align: start;
     }
 
     .buyer-card {
@@ -248,7 +826,29 @@
       min-width: 0;
     }
 
+    .buyer-slide-stage {
+      position: relative;
+
+      width: 100%;
+      overflow: hidden;
+
+      border-radius: 10px;
+
+      margin-bottom: 10px;
+    }
+
+    .buyer-slide-stage img {
+      margin-bottom: 0 !important;
+      border-radius: 10px !important;
+    }
+
     .buyer-slide-controls {
+      position: absolute;
+
+      left: 0;
+      right: 0;
+      bottom: 0;
+
       display: flex;
 
       align-items: center;
@@ -256,24 +856,49 @@
 
       gap: 8px;
 
-      margin-bottom: 12px;
+      min-height: 34px;
+
+      margin: 0;
+      padding: 2px 6px;
+
+      background: #111111;
+      color: #ffffff;
     }
 
     .buyer-slide-button {
-      min-width: 36px;
-      min-height: 36px;
+      display: flex;
 
-      padding: 4px 8px;
+      align-items: center;
+      justify-content: center;
 
-      font-size: 18px;
+      width: 34px;
+      min-width: 34px;
+      height: 30px;
+      min-height: 30px;
+
+      padding: 0;
+
+      border: 0;
+      background: transparent;
+      color: #ffffff;
+
+      font-size: 24px;
       line-height: 1;
+
+      cursor: pointer;
+    }
+
+    .buyer-slide-button:disabled {
+      opacity: 0.35;
+      cursor: default;
     }
 
     .buyer-slide-counter {
-      min-width: 40px;
+      min-width: 44px;
 
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 13px;
     }
 
     #buyer-message {
@@ -312,54 +937,235 @@
       </h1>
 
       <div
-        id="buyer-info-menu-wrapper"
-        hidden
+        id="buyer-header-actions"
       >
-        <button
-          id="buyer-info-button"
-          type="button"
-          aria-expanded="false"
+        <details
+          id="buyer-account-entry"
         >
-          Info ▾
-        </button>
+          <summary>
+            Login
+          </summary>
+
+          <div
+            id="buyer-account-panel"
+          >
+            <h2>
+              Login
+            </h2>
+
+            <form
+              id="buyer-account-form"
+              onsubmit="return false;"
+            >
+              <label
+                for="buyer-account-email"
+              >
+                Email
+              </label>
+
+              <input
+                id="buyer-account-email"
+                type="email"
+                autocomplete="email"
+                required
+              >
+
+              <label
+                for="buyer-account-password"
+              >
+                Password
+              </label>
+
+              <input
+                id="buyer-account-password"
+                type="password"
+                autocomplete="current-password"
+                minlength="8"
+                required
+              >
+
+              <button
+                type="submit"
+              >
+                Log In
+              </button>
+            </form>
+
+            <div
+              id="buyer-account-links"
+            >
+              <button
+                id="buyer-create-account-link"
+                type="button"
+              >
+                Create Account
+              </button>
+
+              <button
+                id="buyer-recover-link"
+                type="button"
+              >
+                Recover Password
+              </button>
+            </div>
+          </div>
+        </details>
 
         <div
-          id="buyer-info-dropdown"
+          id="buyer-info-menu-wrapper"
           hidden
-        ></div>
+        >
+          <button
+            id="buyer-info-button"
+            type="button"
+            aria-expanded="false"
+          >
+            Info ▾
+          </button>
+
+          <div
+            id="buyer-info-dropdown"
+            hidden
+          ></div>
+        </div>
       </div>
     </header>
 
-    <section>
-      <h2>
-        Available Items
+    <section
+      id="buyer-featured-section"
+    >
+      <h2
+        id="buyer-featured-title"
+      >
+        Featured
       </h2>
 
       <div
-        id="buyer-sort-anchor"
-      ></div>
-
-      <div
-        id="buyer-grid"
+        id="buyer-featured-carousel"
       >
-        <div
-          id="buyer-position-1"
-        ></div>
+        <button
+          id="buyer-featured-previous"
+          class="buyer-featured-carousel-button"
+          type="button"
+          aria-label="Previous featured item"
+          title="Previous featured item"
+          hidden
+        >
+          ‹
+        </button>
 
         <div
-          id="buyer-position-2"
-        ></div>
+          id="buyer-grid"
+        >
+          <div
+            id="buyer-position-1"
+          ></div>
 
-        <div
-          id="buyer-position-3"
-        ></div>
+          <div
+            id="buyer-position-2"
+          ></div>
+
+          <div
+            id="buyer-position-3"
+          ></div>
+        </div>
+
+        <button
+          id="buyer-featured-next"
+          class="buyer-featured-carousel-button"
+          type="button"
+          aria-label="Next featured item"
+          title="Next featured item"
+          hidden
+        >
+          ›
+        </button>
       </div>
 
       <p
-        id="buyer-message"
+        id="buyer-featured-message"
       ></p>
     </section>
+
+    <section
+      id="buyer-catalog-section"
+    >
+      <div
+        id="buyer-catalog-toolbar"
+      >
+        <div
+          id="buyer-catalog-title-zone"
+        >
+          <h2
+            id="buyer-catalog-title"
+          >
+            Published Catalog
+          </h2>
+        </div>
+
+        <div
+          id="buyer-catalog-reserved-zone"
+          aria-hidden="true"
+        ></div>
+
+        <div
+          id="buyer-catalog-controls-zone"
+        ></div>
+      </div>
+
+      <div
+        id="buyer-catalog-grid"
+      ></div>
+
+      <p
+        id="buyer-catalog-message"
+      ></p>
+    </section>
+
+    <p
+      id="buyer-message"
+    ></p>
   </main>
+
+  <div
+    id="buyer-item-modal"
+    hidden
+  >
+    <div
+      id="buyer-item-modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="buyer-item-modal-title"
+    >
+      <div
+        id="buyer-item-modal-header"
+      >
+        <h2
+          id="buyer-item-modal-title"
+        ></h2>
+
+        <button
+          id="buyer-item-modal-x"
+          type="button"
+          aria-label="Close item details"
+          title="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div
+        id="buyer-item-modal-content"
+      ></div>
+
+      <button
+        id="buyer-item-modal-close"
+        type="button"
+      >
+        Close
+      </button>
+    </div>
+  </div>
 
   <div
     id="buyer-info-modal"

@@ -369,6 +369,49 @@ width: 100%;
 max-width: none;
 margin: 0;
 }
+#store-setup-section {
+max-width: 620px;
+}
+#store-setup-module {
+width: min(100%, 260px);
+margin-top: 8px;
+margin-bottom: 18px;
+}
+#optional-item-fields-panel {
+width: min(100%, 430px);
+}
+.store-field-preference-row {
+display: grid;
+grid-template-columns: minmax(0, 1fr) 74px 64px;
+column-gap: 10px;
+align-items: center;
+width: 100%;
+min-height: 42px;
+border-bottom: 1px solid #d8d8d8;
+}
+.store-field-preference-row > span:first-child {
+text-align: left;
+}
+.store-field-preference-row label {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 5px;
+margin: 0;
+}
+.store-field-preference-row input[type="checkbox"] {
+box-sizing: border-box;
+width: 1em;
+height: 1em;
+margin: 0;
+padding: 0;
+}
+.store-field-order {
+font-weight: 700;
+}
+#save-store-item-fields {
+margin-top: 16px;
+}
 @media (max-width: 360px) {
 main { width: min(100% - 16px, 820px);
 }
@@ -472,6 +515,23 @@ No Category </option>
 </div>
 <p id="new-item-category-message" ></p>
 </div>
+<label for="item-location" > Location / Booth </label>
+<select id="item-location" >
+<option value="" > No Location </option>
+</select>
+<div id="new-location-inline" hidden >
+<label for="new-item-location-name" > New Location Name </label>
+<input type="text" id="new-item-location-name" >
+<div>
+<button id="create-item-location-button" type="button" > Create Location </button>
+<button id="cancel-item-location-button" type="button" > Cancel </button>
+</div>
+<p id="new-item-location-message" ></p>
+</div>
+<label for="item-seller-number" > Seller Item # </label>
+<input type="text" id="item-seller-number" >
+<label for="item-quantity" > Quantity </label>
+<input type="number" id="item-quantity" min="0" step="1" value="1" required >
 <label for="item-name" > Item Name
 </label>
 <input type="text" id="item-name"
@@ -498,7 +558,7 @@ type="submit" > Add Item </button>
 <section id="claims-section" hidden >
 <h2> Claims </h2>
 <p>
-Claims deferred to a later development stage.
+Claims are not available yet.
 </p>
 </section>
 <section
@@ -514,6 +574,8 @@ id="setup-business-info" type="button" > Business Info
 </button>
 <button id="setup-business-hours" type="button"
 > Business Hours </button>
+<button id="setup-store-setup" type="button"
+> Store Setup </button>
 </nav>
 <hr>
 <section id="page-appearance-section" hidden
@@ -530,6 +592,20 @@ id="page-title" >
 </label>
 <input type="color" id="background-color"
 value="#ffffff" >
+</div>
+<div>
+<label for="featured-section-title" > Featured Section Title
+</label>
+<select id="featured-section-title" >
+<option value="Featured" > Featured </option>
+<option value="Spotlight" > Spotlight </option>
+<option value="New Arrival" > New Arrival </option>
+<option value="Exclusive" > Exclusive </option>
+<option value="Special Offer" > Special Offer </option>
+<option value="Limited Time" > Limited Time </option>
+<option value="Blow Out" > Blow Out </option>
+<option value="Bundle Deal" > Bundle Deal </option>
+</select>
 </div>
 <button
 id="save-page-appearance" type="button" > Save Page Appearance
@@ -791,6 +867,43 @@ Business Hours </h3>
 <p
 id="business-hours-message" ></p>
 </section>
+<section id="store-setup-section" hidden >
+<h3> Store Setup </h3>
+<label for="store-setup-module" > Configure </label>
+<select id="store-setup-module" >
+<option value="optional_item_fields" > Optional Item Fields </option>
+</select>
+<div id="optional-item-fields-panel" >
+<div class="store-field-preference-row" >
+<span> Quantity </span>
+<label for="store-field-quantity" >
+<input type="checkbox" id="store-field-quantity" >
+On
+</label>
+<span class="store-field-order" >10</span>
+</div>
+<div class="store-field-preference-row" >
+<span> Location / Booth </span>
+<label for="store-field-location" >
+<input type="checkbox" id="store-field-location" >
+On
+</label>
+<span class="store-field-order" >20</span>
+</div>
+<div class="store-field-preference-row" >
+<span> Seller Item # </span>
+<label for="store-field-seller-item-number" >
+<input type="checkbox" id="store-field-seller-item-number" >
+On
+</label>
+<span class="store-field-order" >30</span>
+</div>
+<button id="save-store-item-fields" type="button" >
+Save Optional Item Fields
+</button>
+<p id="store-item-fields-message" ></p>
+</div>
+</section>
 </section>
 <section id="categories-section" hidden >
 <h2> Categories </h2>
@@ -902,16 +1015,36 @@ const setupBusinessInfo =
 document.getElementById("setup-business-info");
 const setupBusinessHours =
 document.getElementById("setup-business-hours");
+const setupStoreSetup =
+document.getElementById("setup-store-setup");
 const pageAppearanceSection =
 document.getElementById("page-appearance-section");
 const businessInfoSection =
 document.getElementById("business-info-section");
 const businessHoursSection =
 document.getElementById("business-hours-section");
+const storeSetupSection =
+document.getElementById("store-setup-section");
+const storeSetupModule =
+document.getElementById("store-setup-module");
+const optionalItemFieldsPanel =
+document.getElementById("optional-item-fields-panel");
+const storeFieldQuantity =
+document.getElementById("store-field-quantity");
+const storeFieldLocation =
+document.getElementById("store-field-location");
+const storeFieldSellerItemNumber =
+document.getElementById("store-field-seller-item-number");
+const saveStoreItemFieldsButton =
+document.getElementById("save-store-item-fields");
+const storeItemFieldsMessage =
+document.getElementById("store-item-fields-message");
 const pageTitleInput =
 document.getElementById("page-title");
 const backgroundColorInput =
 document.getElementById("background-color");
+const featuredSectionTitleInput =
+document.getElementById("featured-section-title");
 const onlineSalesOnlyInput =
 document.getElementById("online-sales-only");
 const businessStreetInput =
@@ -1009,6 +1142,7 @@ function hideSellerPageSetupAreas() {
 pageAppearanceSection.hidden = true;
 businessInfoSection.hidden = true;
 businessHoursSection.hidden = true;
+storeSetupSection.hidden = true;
 }
 
 function updateAddressFieldState() {
@@ -1183,7 +1317,7 @@ const { data, error } =
 await window.supabaseClient
 .from("seller_page_settings")
 .select(
-"page_title, background_color, online_sales_only, business_street, business_city, business_state, business_zip, business_phone, business_email"
+"page_title, background_color, featured_section_title, online_sales_only, business_street, business_city, business_state, business_zip, business_phone, business_email"
 )
 .eq("store_id", store.id)
 .maybeSingle();
@@ -1197,6 +1331,8 @@ pageTitleInput.value =
 data?.page_title || "";
 backgroundColorInput.value =
 data?.background_color || "#ffffff";
+featuredSectionTitleInput.value =
+data?.featured_section_title || "Featured";
 onlineSalesOnlyInput.checked =
 data?.online_sales_only === true;
 businessStreetInput.value =
@@ -1312,6 +1448,8 @@ page_title:
 pageTitleInput.value.trim() || null,
 background_color:
 backgroundColorInput.value || "#ffffff",
+featured_section_title:
+featuredSectionTitleInput.value || "Featured",
 updated_at:
 new Date().toISOString()
 },
@@ -1484,6 +1622,112 @@ businessHoursMessage.textContent =
 "Business hours saved successfully.";
 }
 
+async function loadStoreItemFieldPreferences() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+storeItemFieldsMessage.textContent =
+"No store membership is assigned.";
+return;
+}
+
+storeItemFieldsMessage.textContent =
+"Loading optional item fields...";
+
+const { data, error } =
+await window.supabaseClient
+.from("store_item_field_preferences")
+.select("field_key, is_enabled, display_order")
+.eq("store_id", store.id)
+.order(
+"display_order",
+{ ascending: true }
+);
+
+if (error) {
+storeItemFieldsMessage.textContent =
+error.message;
+return;
+}
+
+const preferenceMap =
+new Map(
+(data || []).map(
+(row) => [
+row.field_key,
+row
+]
+)
+);
+
+storeFieldQuantity.checked =
+preferenceMap.get("quantity")?.is_enabled === true;
+
+storeFieldLocation.checked =
+preferenceMap.get("location")?.is_enabled === true;
+
+storeFieldSellerItemNumber.checked =
+preferenceMap.get("seller_item_number")?.is_enabled === true;
+
+storeItemFieldsMessage.textContent = "";
+}
+
+async function saveStoreItemFieldPreferences() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+storeItemFieldsMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+storeItemFieldsMessage.textContent =
+"Saving optional item fields...";
+
+const rows = [
+{
+field_key: "quantity",
+is_enabled: storeFieldQuantity.checked,
+display_order: 10
+},
+{
+field_key: "location",
+is_enabled: storeFieldLocation.checked,
+display_order: 20
+},
+{
+field_key: "seller_item_number",
+is_enabled: storeFieldSellerItemNumber.checked,
+display_order: 30
+}
+];
+
+for (const row of rows) {
+const { error } =
+await window.supabaseClient
+.from("store_item_field_preferences")
+.update({
+is_enabled: row.is_enabled,
+display_order: row.display_order,
+updated_at:
+new Date().toISOString()
+})
+.eq("store_id", store.id)
+.eq("field_key", row.field_key);
+
+if (error) {
+storeItemFieldsMessage.textContent =
+error.message;
+return;
+}
+}
+
+storeItemFieldsMessage.textContent =
+"Optional item fields saved successfully.";
+}
+
 setupPageAppearance.addEventListener(
 "click",
 () => {
@@ -1505,6 +1749,27 @@ setupBusinessHours.addEventListener(
 () => {
 hideSellerPageSetupAreas();
 businessHoursSection.hidden = false;
+}
+);
+
+setupStoreSetup.addEventListener(
+"click",
+async () => {
+hideSellerPageSetupAreas();
+storeSetupSection.hidden = false;
+storeSetupModule.value =
+"optional_item_fields";
+optionalItemFieldsPanel.hidden = false;
+await loadStoreItemFieldPreferences();
+}
+);
+
+storeSetupModule.addEventListener(
+"change",
+() => {
+optionalItemFieldsPanel.hidden =
+storeSetupModule.value !==
+"optional_item_fields";
 }
 );
 
@@ -1629,6 +1894,13 @@ await saveBusinessHours();
 }
 );
 
+saveStoreItemFieldsButton.addEventListener(
+"click",
+async () => {
+await saveStoreItemFieldPreferences();
+}
+);
+
 document
 .getElementById("dashboard-seller-page")
 .addEventListener(
@@ -1666,6 +1938,220 @@ return [];
 
 return data || [];
 };
+
+const itemLocation =
+document.getElementById("item-location");
+
+window.getSellerLocations =
+async function() {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+return [];
+}
+
+const { data, error } =
+await window.supabaseClient
+.from("store_locations")
+.select("id, name")
+.eq("store_id", store.id)
+.eq("is_active", true)
+.order(
+"name",
+{ ascending: true }
+);
+
+if (error) {
+itemMessage.textContent =
+error.message;
+return [];
+}
+
+return data || [];
+};
+
+window.loadItemLocationOptions =
+async function(selectedLocationId = "") {
+const locations =
+await window.getSellerLocations();
+
+itemLocation.innerHTML = "";
+
+const createOption =
+document.createElement("option");
+
+createOption.value =
+"__create_new__";
+
+createOption.textContent =
+"Create New";
+
+itemLocation.appendChild(
+createOption
+);
+
+const dividerOption =
+document.createElement("option");
+
+dividerOption.disabled =
+true;
+
+dividerOption.textContent =
+"────────────";
+
+itemLocation.appendChild(
+dividerOption
+);
+
+const noLocationOption =
+document.createElement("option");
+
+noLocationOption.value = "";
+noLocationOption.textContent =
+"No Location";
+
+itemLocation.appendChild(
+noLocationOption
+);
+
+locations.forEach((location) => {
+const option =
+document.createElement("option");
+
+option.value =
+location.id;
+
+option.textContent =
+location.name;
+
+itemLocation.appendChild(
+option
+);
+});
+
+itemLocation.value =
+selectedLocationId
+? String(selectedLocationId)
+: "";
+};
+
+const newLocationInline =
+document.getElementById("new-location-inline");
+
+const newItemLocationName =
+document.getElementById("new-item-location-name");
+
+const createItemLocationButton =
+document.getElementById("create-item-location-button");
+
+const cancelItemLocationButton =
+document.getElementById("cancel-item-location-button");
+
+const newItemLocationMessage =
+document.getElementById("new-item-location-message");
+
+itemLocation.addEventListener(
+"change",
+() => {
+if (
+itemLocation.value !==
+"__create_new__"
+) {
+return;
+}
+
+itemLocation.value = "";
+newLocationInline.hidden = false;
+newItemLocationMessage.textContent = "";
+newItemLocationName.value = "";
+newItemLocationName.focus();
+}
+);
+
+cancelItemLocationButton.addEventListener(
+"click",
+() => {
+newLocationInline.hidden = true;
+newItemLocationName.value = "";
+newItemLocationMessage.textContent = "";
+itemLocation.value = "";
+}
+);
+
+createItemLocationButton.addEventListener(
+"click",
+async () => {
+const store =
+await loadCurrentStoreIdentity();
+
+if (!store) {
+newItemLocationMessage.textContent =
+"You must be logged in with a store assigned.";
+return;
+}
+
+const locationName =
+newItemLocationName.value.trim();
+
+if (!locationName) {
+newItemLocationMessage.textContent =
+"Please enter a location name.";
+return;
+}
+
+newItemLocationMessage.textContent =
+"Creating location...";
+
+const {
+data: createdLocation,
+error
+} =
+await window.supabaseClient
+.from("store_locations")
+.insert({
+store_id: store.id,
+name: locationName
+})
+.select("id, name")
+.single();
+
+if (error) {
+newItemLocationMessage.textContent =
+error.message;
+return;
+}
+
+await window.loadItemLocationOptions(
+createdLocation.id
+);
+
+newLocationInline.hidden = true;
+newItemLocationName.value = "";
+newItemLocationMessage.textContent = "";
+}
+);
+
+document
+.getElementById("dashboard-add-item")
+.addEventListener(
+"click",
+async () => {
+hideAllSellerWorkAreas();
+addItemSection.hidden = false;
+
+newCategoryInline.hidden = true;
+newItemCategoryName.value = "";
+newItemCategoryMessage.textContent = "";
+
+newLocationInline.hidden = true;
+newItemLocationName.value = "";
+newItemLocationMessage.textContent = "";
+
+await window.loadItemCategoryOptions();
+await window.loadItemLocationOptions();
+}
+);
 
 const newCategoryInline =
 document.getElementById("new-category-inline");
@@ -2169,7 +2655,7 @@ await Promise.all([
 window.supabaseClient
 .from("items")
 .select(
-"id, name, price, description, image_path, category_id, is_published"
+"id, name, price, description, image_path, category_id, location_id, seller_item_number, quantity, is_published"
 )
 .eq("store_id", store.id)
 .order(
@@ -2483,7 +2969,10 @@ item,
 newName,
 newPrice,
 newDescription,
-newCategoryId
+newCategoryId,
+newLocationId,
+newSellerItemNumber,
+newQuantity
 ) {
 const session =
 await getSetupSession();
@@ -2539,6 +3028,27 @@ newCategoryId
 ? Number(newCategoryId)
 : null;
 
+const locationId =
+newLocationId
+? newLocationId
+: null;
+
+const sellerItemNumber =
+String(newSellerItemNumber || "").trim() || null;
+
+const quantity =
+Number(newQuantity);
+
+if (
+newQuantity === "" ||
+!Number.isInteger(quantity) ||
+quantity < 0
+) {
+inventoryMessage.textContent =
+"Quantity must be a whole number of 0 or more.";
+return false;
+}
+
 inventoryMessage.textContent =
 "Saving item changes...";
 
@@ -2549,7 +3059,10 @@ await window.supabaseClient
 name: cleanedName,
 price: Number(newPrice),
 description: cleanedDescription,
-category_id: categoryId
+category_id: categoryId,
+location_id: locationId,
+seller_item_number: sellerItemNumber,
+quantity: quantity
 })
 .eq("id", item.id)
 .eq("store_id", store.id)
@@ -3023,6 +3536,34 @@ itemCategory.value
 ? Number(itemCategory.value)
 : null;
 
+const locationId =
+itemLocation.value
+? itemLocation.value
+: null;
+
+const sellerItemNumber =
+document.getElementById(
+"item-seller-number"
+).value.trim() || null;
+
+const rawQuantity =
+document.getElementById(
+"item-quantity"
+).value;
+
+const quantity =
+Number(rawQuantity);
+
+if (
+rawQuantity === "" ||
+!Number.isInteger(quantity) ||
+quantity < 0
+) {
+itemMessage.textContent =
+"Quantity must be a whole number of 0 or more.";
+return;
+}
+
 if (!name) {
 itemMessage.textContent =
 "Item name cannot be blank.";
@@ -3137,6 +3678,15 @@ uploadedImages[0].imagePath,
 category_id:
 categoryId,
 
+location_id:
+locationId,
+
+seller_item_number:
+sellerItemNumber,
+
+quantity:
+quantity,
+
 is_published:
 true
 })
@@ -3240,6 +3790,10 @@ return;
 
 itemForm.reset();
 
+newLocationInline.hidden = true;
+newItemLocationName.value = "";
+newItemLocationMessage.textContent = "";
+
 itemMessage.textContent =
 `Item added successfully with ${uploadedImages.length} picture` +
 (
@@ -3251,6 +3805,8 @@ uploadedImages.length === 1
 await window.loadInventory();
 
 await loadItemCategoryOptions();
+
+await window.loadItemLocationOptions();
 },
 true
 );

@@ -110,6 +110,284 @@ async function getCurrentSession() {
   return session;
 }
 
+const DEFAULT_ITEM_FIELD_PREFERENCES = [
+  {
+    field_key:
+      "quantity",
+    is_enabled:
+      true,
+    display_order:
+      10
+  },
+  {
+    field_key:
+      "location",
+    is_enabled:
+      true,
+    display_order:
+      20
+  },
+  {
+    field_key:
+      "seller_item_number",
+    is_enabled:
+      true,
+    display_order:
+      30
+  }
+];
+
+async function getSellerItemFieldPreferences() {
+  const store =
+    await loadCurrentStoreIdentity();
+
+  if (!store) {
+    return DEFAULT_ITEM_FIELD_PREFERENCES
+      .map(
+        (preference) => ({
+          ...preference
+        })
+      );
+  }
+
+  const {
+    data,
+    error
+  } =
+    await window.supabaseClient
+      .from(
+        "store_item_field_preferences"
+      )
+      .select(
+        "field_key, is_enabled, display_order"
+      )
+      .eq(
+        "store_id",
+        store.id
+      )
+      .order(
+        "display_order",
+        {
+          ascending:
+            true
+        }
+      );
+
+  if (error) {
+    throw error;
+  }
+
+  const savedPreferences =
+    new Map(
+      (data || []).map(
+        (preference) => [
+          preference.field_key,
+          preference
+        ]
+      )
+    );
+
+  return DEFAULT_ITEM_FIELD_PREFERENCES
+    .map(
+      (defaultPreference) => {
+        const savedPreference =
+          savedPreferences.get(
+            defaultPreference.field_key
+          );
+
+        if (!savedPreference) {
+          return {
+            ...defaultPreference
+          };
+        }
+
+        return {
+          field_key:
+            savedPreference.field_key,
+          is_enabled:
+            savedPreference.is_enabled ===
+            true,
+          display_order:
+            Number(
+              savedPreference.display_order
+            )
+        };
+      }
+    )
+    .sort(
+      (a, b) =>
+        Number(a.display_order) -
+        Number(b.display_order)
+    );
+}
+
+function getSellerItemFieldPreference(
+  preferences,
+  fieldKey
+) {
+  return (
+    preferences.find(
+      (preference) =>
+        preference.field_key ===
+        fieldKey
+    ) ||
+    DEFAULT_ITEM_FIELD_PREFERENCES.find(
+      (preference) =>
+        preference.field_key ===
+        fieldKey
+    )
+  );
+}
+
+async function applyAddItemFieldPreferences() {
+  let preferences;
+
+  try {
+    preferences =
+      await getSellerItemFieldPreferences();
+  } catch (error) {
+    itemMessage.textContent =
+      error.message;
+
+    return false;
+  }
+
+  const itemNameLabel =
+    document.querySelector(
+      'label[for="item-name"]'
+    );
+
+  if (!itemNameLabel) {
+    itemMessage.textContent =
+      "The Add Item form could not apply optional field preferences.";
+
+    return false;
+  }
+
+  const fieldNodes = {
+    quantity: {
+      label:
+        document.querySelector(
+          'label[for="item-quantity"]'
+        ),
+      control:
+        document.getElementById(
+          "item-quantity"
+        )
+    },
+    location: {
+      label:
+        document.querySelector(
+          'label[for="item-location"]'
+        ),
+      control:
+        document.getElementById(
+          "item-location"
+        ),
+      extra:
+        document.getElementById(
+          "new-location-inline"
+        )
+    },
+    seller_item_number: {
+      label:
+        document.querySelector(
+          'label[for="item-seller-number"]'
+        ),
+      control:
+        document.getElementById(
+          "item-seller-number"
+        )
+    }
+  };
+
+  preferences.forEach(
+    (preference) => {
+      const field =
+        fieldNodes[
+          preference.field_key
+        ];
+
+      if (
+        !field ||
+        !field.label ||
+        !field.control
+      ) {
+        return;
+      }
+
+      const enabled =
+        preference.is_enabled ===
+        true;
+
+      field.label.hidden =
+        !enabled;
+
+      field.control.hidden =
+        !enabled;
+
+      if (
+        preference.field_key ===
+        "quantity"
+      ) {
+        field.control.required =
+          enabled;
+
+        if (!enabled) {
+          field.control.value =
+            "1";
+        }
+      }
+
+      if (
+        preference.field_key ===
+        "location" &&
+        !enabled
+      ) {
+        field.control.value =
+          "";
+
+        if (field.extra) {
+          field.extra.hidden =
+            true;
+        }
+      }
+
+      if (
+        preference.field_key ===
+          "seller_item_number" &&
+        !enabled
+      ) {
+        field.control.value =
+          "";
+      }
+
+      itemForm.insertBefore(
+        field.label,
+        itemNameLabel
+      );
+
+      itemForm.insertBefore(
+        field.control,
+        itemNameLabel
+      );
+
+      if (
+        preference.field_key ===
+          "location" &&
+        field.extra
+      ) {
+        itemForm.insertBefore(
+          field.extra,
+          itemNameLabel
+        );
+      }
+    }
+  );
+
+  return true;
+}
+
 async function getSellerCategories() {
   const session =
     await getCurrentSession();
@@ -1436,6 +1714,18 @@ async function showItemEditor(
   itemContainer.innerHTML =
     "";
 
+  let itemFieldPreferences;
+
+  try {
+    itemFieldPreferences =
+      await getSellerItemFieldPreferences();
+  } catch (error) {
+    inventoryMessage.textContent =
+      error.message;
+
+    return;
+  }
+
   const imageSection =
     document.createElement("div");
 
@@ -1563,6 +1853,106 @@ async function showItemEditor(
     }
   );
 
+  const locationLabel =
+    document.createElement("label");
+
+  locationLabel.textContent =
+    "Location / Booth";
+
+  const locationSelect =
+    document.createElement(
+      "select"
+    );
+
+  const noLocationOption =
+    document.createElement(
+      "option"
+    );
+
+  noLocationOption.value =
+    "";
+
+  noLocationOption.textContent =
+    "No Location";
+
+  locationSelect.appendChild(
+    noLocationOption
+  );
+
+  const locations =
+    typeof window.getSellerLocations ===
+      "function"
+      ? await window.getSellerLocations()
+      : [];
+
+  locations.forEach(
+    (location) => {
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        location.id;
+
+      option.textContent =
+        location.name;
+
+      if (
+        item.location_id &&
+        String(
+          item.location_id
+        ) ===
+          String(
+            location.id
+          )
+      ) {
+        option.selected =
+          true;
+      }
+
+      locationSelect.appendChild(
+        option
+      );
+    }
+  );
+
+  const sellerItemNumberLabel =
+    document.createElement("label");
+
+  sellerItemNumberLabel.textContent =
+    "Seller Item #";
+
+  const sellerItemNumberInput =
+    document.createElement("input");
+
+  sellerItemNumberInput.type =
+    "text";
+
+  sellerItemNumberInput.value =
+    item.seller_item_number || "";
+
+  const quantityLabel =
+    document.createElement("label");
+
+  quantityLabel.textContent =
+    "Quantity";
+
+  const quantityInput =
+    document.createElement("input");
+
+  quantityInput.type =
+    "number";
+
+  quantityInput.min =
+    "0";
+
+  quantityInput.step =
+    "1";
+
+  quantityInput.value =
+    item.quantity ?? 1;
+
   const saveButton =
     document.createElement(
       "button"
@@ -1588,12 +1978,51 @@ async function showItemEditor(
   saveButton.addEventListener(
     "click",
     async () => {
-      await updateItem(
+      const locationPreference =
+        getSellerItemFieldPreference(
+          itemFieldPreferences,
+          "location"
+        );
+
+      const sellerItemNumberPreference =
+        getSellerItemFieldPreference(
+          itemFieldPreferences,
+          "seller_item_number"
+        );
+
+      const quantityPreference =
+        getSellerItemFieldPreference(
+          itemFieldPreferences,
+          "quantity"
+        );
+
+      await window.updateItem(
         item,
         nameInput.value,
         priceInput.value,
         descriptionInput.value,
-        categorySelect.value
+        categorySelect.value,
+        locationPreference?.is_enabled ===
+          true
+          ? locationSelect.value
+          : (
+              item.location_id ||
+              ""
+            ),
+        sellerItemNumberPreference?.is_enabled ===
+          true
+          ? sellerItemNumberInput.value
+          : (
+              item.seller_item_number ||
+              ""
+            ),
+        quantityPreference?.is_enabled ===
+          true
+          ? quantityInput.value
+          : (
+              item.quantity ??
+              1
+            )
       );
     }
   );
@@ -1687,6 +2116,75 @@ async function showItemEditor(
       "br"
     )
   );
+
+  const optionalEditorFields = {
+    quantity: {
+      label:
+        quantityLabel,
+      control:
+        quantityInput
+    },
+    location: {
+      label:
+        locationLabel,
+      control:
+        locationSelect
+    },
+    seller_item_number: {
+      label:
+        sellerItemNumberLabel,
+      control:
+        sellerItemNumberInput
+    }
+  };
+
+  itemFieldPreferences
+    .filter(
+      (preference) =>
+        preference.is_enabled ===
+        true
+    )
+    .sort(
+      (a, b) =>
+        Number(
+          a.display_order
+        ) -
+        Number(
+          b.display_order
+        )
+    )
+    .forEach(
+      (preference) => {
+        const field =
+          optionalEditorFields[
+            preference.field_key
+          ];
+
+        if (!field) {
+          return;
+        }
+
+        editor.appendChild(
+          field.label
+        );
+
+        editor.appendChild(
+          document.createTextNode(
+            " "
+          )
+        );
+
+        editor.appendChild(
+          field.control
+        );
+
+        editor.appendChild(
+          document.createElement(
+            "br"
+          )
+        );
+      }
+    );
 
   editor.appendChild(
     saveButton
@@ -3111,12 +3609,7 @@ logoutButton.addEventListener(
 dashboardAddItem.addEventListener(
   "click",
   async () => {
-    hideAllSellerWorkAreas();
-
-    addItemSection.hidden =
-      false;
-
-    await loadItemCategoryOptions();
+    await applyAddItemFieldPreferences();
   }
 );
 
@@ -3220,305 +3713,6 @@ categoryForm.addEventListener(
       "Category added successfully.";
 
     await loadCategories();
-  }
-);
-
-itemForm.addEventListener(
-  "submit",
-  async (event) => {
-    event.preventDefault();
-
-    itemMessage.textContent =
-      "Adding item...";
-
-    const session =
-      await getCurrentSession();
-
-    if (!session) {
-      itemMessage.textContent =
-        "You must be logged in.";
-
-      return;
-    }
-
-    const imageFiles =
-      [1, 2, 3, 4].map(
-        (number) =>
-          document
-            .getElementById(
-              `item-image-${number}`
-            )
-            .files[0] ||
-          null
-      );
-
-    if (!imageFiles[0]) {
-      itemMessage.textContent =
-        "Product Picture 1 is required.";
-
-      return;
-    }
-
-    const selectedImages =
-      imageFiles
-        .map(
-          (file, index) => ({
-            file,
-            sortOrder:
-              index + 1
-          })
-        )
-        .filter(
-          (entry) =>
-            entry.file !==
-            null
-        );
-
-    const name =
-      document
-        .getElementById(
-          "item-name"
-        )
-        .value
-        .trim();
-
-    const price =
-      Number(
-        document
-          .getElementById(
-            "item-price"
-          )
-          .value
-      );
-
-    const description =
-      document
-        .getElementById(
-          "item-description"
-        )
-        .value
-        .trim();
-
-    const categoryId =
-      itemCategory.value
-        ? Number(
-            itemCategory.value
-          )
-        : null;
-
-    if (!description) {
-      itemMessage.textContent =
-        "Description cannot be blank.";
-
-      return;
-    }
-
-    if (
-      description.length >
-      ITEM_DESCRIPTION_MAX_LENGTH
-    ) {
-      itemMessage.textContent =
-        `Description must be ${ITEM_DESCRIPTION_MAX_LENGTH} characters or fewer.`;
-
-      return;
-    }
-
-    const uploadedImages =
-      [];
-
-    for (
-      const image
-      of selectedImages
-    ) {
-      itemMessage.textContent =
-        `Uploading picture ${image.sortOrder}...`;
-
-      const extension =
-        image.file.name
-          .split(".")
-          .pop();
-
-      const filePath =
-        `${session.user.id}/` +
-        `${Date.now()}-` +
-        `${image.sortOrder}.` +
-        `${extension}`;
-
-      const {
-        error: uploadError
-      } =
-        await window.supabaseClient.storage
-          .from("product_images")
-          .upload(
-            filePath,
-            image.file
-          );
-
-      if (uploadError) {
-        if (
-          uploadedImages.length >
-          0
-        ) {
-          await window.supabaseClient.storage
-            .from(
-              "product_images"
-            )
-            .remove(
-              uploadedImages.map(
-                (
-                  uploadedImage
-                ) =>
-                  uploadedImage.imagePath
-              )
-            );
-        }
-
-        itemMessage.textContent =
-          `Picture ${image.sortOrder} could not be uploaded: ` +
-          uploadError.message;
-
-        return;
-      }
-
-      uploadedImages.push({
-        imagePath:
-          filePath,
-        sortOrder:
-          image.sortOrder
-      });
-    }
-
-    itemMessage.textContent =
-      "Creating item...";
-
-    const {
-      data: insertedItem,
-      error: insertError
-    } =
-      await window.supabaseClient
-        .from("items")
-        .insert({
-          seller_id:
-            session.user.id,
-          name,
-          price,
-          description,
-          image_path:
-            uploadedImages[0]
-              .imagePath,
-          category_id:
-            categoryId,
-          is_published:
-            true
-        })
-        .select("id")
-        .single();
-
-    if (insertError) {
-      await window.supabaseClient.storage
-        .from("product_images")
-        .remove(
-          uploadedImages.map(
-            (
-              uploadedImage
-            ) =>
-              uploadedImage.imagePath
-          )
-        );
-
-      itemMessage.textContent =
-        insertError.message;
-
-      return;
-    }
-
-    itemMessage.textContent =
-      "Creating image records...";
-
-    const imageRecords =
-      uploadedImages.map(
-        (image) => ({
-          seller_id:
-            session.user.id,
-          item_id:
-            insertedItem.id,
-          image_path:
-            image.imagePath,
-          sort_order:
-            image.sortOrder
-        })
-      );
-
-    const {
-      error: imageRecordError
-    } =
-      await window.supabaseClient
-        .from("item_images")
-        .insert(
-          imageRecords
-        );
-
-    if (imageRecordError) {
-      const {
-        error: rollbackItemError
-      } =
-        await window.supabaseClient
-          .from("items")
-          .delete()
-          .eq(
-            "id",
-            insertedItem.id
-          )
-          .eq(
-            "seller_id",
-            session.user.id
-          );
-
-      const {
-        error: rollbackImagesError
-      } =
-        await window.supabaseClient.storage
-          .from("product_images")
-          .remove(
-            uploadedImages.map(
-              (
-                uploadedImage
-              ) =>
-                uploadedImage.imagePath
-            )
-          );
-
-      if (
-        rollbackItemError ||
-        rollbackImagesError
-      ) {
-        itemMessage.textContent =
-          "Image records could not be created, and automatic cleanup was incomplete. Stop here and inspect Supabase.";
-
-        return;
-      }
-
-      itemMessage.textContent =
-        "Item was not added because its image records could not be created: " +
-        imageRecordError.message;
-
-      return;
-    }
-
-    itemForm.reset();
-
-    itemMessage.textContent =
-      `Item added successfully with ${uploadedImages.length} picture` +
-      (
-        uploadedImages.length ===
-        1
-          ? "."
-          : "s."
-      );
-
-    await loadInventory();
-
-    await loadItemCategoryOptions();
   }
 );
 
